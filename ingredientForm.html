@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+		<!-- Required meta tags always come first -->
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+		<meta http-equiv="x-ua-compatible" content="ie=edge">
+
+		<title>Ingredient Form</title>
+
+		<!-- Bootstrap -->
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+    </head>
+    <body>
+        <h2>Add a Ingredient</h2>
+        <br/>
+
+
+        <!-- Button trigger modal -->
+		<button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#busyModal" data-backdrop=true>
+		  Show Busy
+		</button>
+
+		<button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#ingredientFormModal" data-backdrop="static" data-mode="Add">
+		  Add Ingredient
+		</button>
+
+		<button id="editIngrBt" type="button" class="btn btn-primary btn-sm">
+		  Edit Ingredient
+		</button>
+
+
+		<!-- Modal Busy Indicator-->
+		<div class="modal fade" id="busyModal" tabindex="-1" role="dialog" aria-labelledby="busyLabel" aria-hidden="true">
+		  <div class="modal-dialog modal-lg" role="document">
+			<div class="modal-content">
+			  <div class="modal-header">
+				<h4 class="modal-title" id="busyLabel">Processing...</h4>
+			  </div>
+			  <div class="modal-body">
+				<div class="progress">
+					<div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width:100%"></div>
+				</div>
+			  </div>
+			</div>
+		  </div>
+		</div>
+
+
+		<!-- Modal Ingredient Form-->
+		<div class="modal fade" id="ingredientFormModal" tabindex="-1" role="dialog" aria-labelledby="formLabel" aria-hidden="true">
+		  <div class="modal-dialog modal-lg" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+					<h4 class="modal-title" id="formLabel">Add Ingredient</h4>
+				</div>
+				<div class="modal-body">
+					<div class ="container-fluid">
+						<form class="form-horizontal" id="addIngredientForm" role="form">
+							<!-- Title -->
+							<div class="form-group row">
+								<label for="rTitle" class="control-label col-sm-2">Title</label>
+								<div class="col-sm-10">
+									<input type="text" class="form-control" id="rTitle" placeholder="Paneer" required></input>
+								</div>
+							</div>
+
+							<!-- Image File-->
+							<div class="form-group row">
+								<label for="rRecipeRefPhoto" class="control-label col-sm-2">Refrence Photo</label>
+								<div class="col-sm-10">
+									<input type="file" class="form-control" id="rRecipeRefPhoto" required>
+									<span class="file-custom"></span>
+								</div>
+							</div>
+
+							<!-- Image File Preview Box-->
+							<div class="form-group row" id="imgPreviewBox" hidden>
+								<div class="col-sm-offset-2 col-sm-10">
+									<img id="imgElem" src="" class="img-thumbnail" alt="Ingredient Img" width="304" height="236">
+								</div>
+							</div>
+
+							<!-- Ingredient Category -->
+							<div class="form-group row">
+								<label for="rCategory" class="control-label col-sm-2">Category</label>
+
+								<div class="col-sm-10">
+
+									<!-- Category -->
+									<select class="form-control" id="rCategory">
+										<option>Vegetable</option>
+										<option>Meat</option>
+										<option>Fruit</option>
+									</select>
+								</div>
+							</div>
+
+							<div class="form-group row">
+								<div class="col-sm-offset-2 col-sm-10">
+									<button type="submit" class="btn btn-primary">Add Ingredient</button>
+								</div>
+							</div>
+						</form>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+					<button type="button" class="btn btn-primary">Save</button>
+				</div>
+		  	</div>
+		  </div>
+		</div>
+
+
+        <div class = "container">
+            <form class="form-horizontal" id="addIngredientForm" role="form">
+                <!-- Title -->
+                <div class="form-group row">
+                    <label for="rTitle" class="control-label col-sm-2">Title</label>
+                    <div class="col-sm-10">
+                    	<input type="text" class="form-control" id="rTitle" placeholder="Paneer" required></input>
+                    </div>
+                </div>
+
+                <!-- Image File-->
+                <div class="form-group row">
+                    <label for="rRecipeRefPhoto" class="control-label col-sm-2">Refrence Photo</label>
+                    <div class="col-sm-10">
+                        <input type="file" class="form-control" id="rRecipeRefPhoto" required>
+                        <span class="file-custom"></span>
+                    </div>
+                </div>
+
+				<!-- Image File Preview Box-->
+				<div class="form-group row" id="imgPreviewBox" hidden>
+                    <div class="col-sm-offset-2 col-sm-10">
+                        <img id="imgElem" src="" class="img-thumbnail" alt="Ingredient Img" width="304" height="236">
+                    </div>
+                </div>
+
+                <!-- Ingredient Category -->
+                <div class="form-group row">
+                    <label for="rCategory" class="control-label col-sm-2">Category</label>
+
+                    <div class="col-sm-10">
+
+                        <!-- Category -->
+                        <select class="form-control" id="rCategory">
+                            <option>Vegetable</option>
+                            <option>Meat</option>
+                            <option>Fruit</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group row">
+					<div class="col-sm-offset-2 col-sm-10">
+						<button type="submit" class="btn btn-primary">Add Ingredient</button>
+					</div>
+                </div>
+            </form>
+        </div>
+
+
+        <!--
+        <h3>Title</h3>
+        <input type="text" class="input-block-level" placeholder="Paneer Bhujiya">
+        <br>
+
+        <h3>Ingredients</h3>
+        <textarea class="form-control"></textarea>
+        <br>
+
+         -->
+
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+		<script src="js/bootbox.min.js"></script>
+
+		<script type="text/javascript" src="js/lib.js"></script>
+		<script src="http://www.parsecdn.com/js/parse-1.6.7.min.js"></script>
+		<script src="https://apis.google.com/js/client.js"></script>
+
+    </body>
+
+    <script>
+
+    	$('#editIngrBt').on('click',function(event){
+
+    		//Update the modal values
+    		var modal = $('#ingredientFormModal');
+    		modal.find('#rTitle').val("tmp"); //--Clear Title
+    		modal.find('#rRecipeRefPhoto').val(""); //--Clear Image
+    		modal.find('#imgElem').attr('src',"");
+    		modal.find('#imgPreviewBox').attr('hidden',true);
+    		modal.find("#rCategory :nth(1)").prop("selected","selected"); //--Reset Category selection
+
+    		//Show the modal
+    		modal.modal('show');
+    	});
+
+    	$('#ingredientFormModal').on('show.bs.modal',function(event){
+
+    		var button = $(event.relatedTarget);
+    		var recp = button.data('mode');
+
+    		if(recp && recp === 'Add') {
+    		    //Reset all fields
+				var modal = $(this);
+				modal.find('#rTitle').val(""); //--Clear Title
+				modal.find('#rRecipeRefPhoto').val(""); //--Clear Image
+				modal.find('#imgElem').attr('src',"");
+				modal.find('#imgPreviewBox').attr('hidden',true);
+				modal.find("#rCategory :nth(0)").prop("selected","selected"); //--Reset Category selection
+    		}
+    	});
+
+    	function clearImage() {
+			$("#rRecipeRefPhoto").val("");
+			$("#imgElem").attr('src',"");
+			$("#imgPreviewBox").attr('hidden',true);
+		}
+
+		var myApp;
+		myApp = myApp || (function () {
+			var pleaseWaitDiv = $('<div class="modal hide" id="pleaseWaitDialog" data-backdrop="static" data-keyboard="false"><div class="modal-header"><h1>Processing...</h1></div><div class="modal-body"><div class="progress progress-striped active"><div class="bar" style="width: 100%;"></div></div></div></div>');
+			return {
+				showPleaseWait: function() {
+					pleaseWaitDiv.modal();
+				},
+				hidePleaseWait: function () {
+					pleaseWaitDiv.modal('hide');
+				},
+
+			};
+		})();
+
+		$(document).ready(function() {
+
+			Parse.initialize("rfIsAJZM19Dh1kOv8eYnHizu8MjrjA6wrFrJOlvn", "fcfoBG221xYTkUXsSYhqNa3MnT2nSItyp1NiWAaM");
+			var IngredientClass = Parse.Object.extend("Ingredient");
+
+			window.setTimeout(function(){handleClientLoad();}, 1000);
+
+			$("#rRecipeRefPhoto").on("change",function(e){
+
+				var inputElem = this;
+				if (inputElem.files && inputElem.files[0]) {
+
+					updateImgElemFromFile($("#imgElem"),inputElem.files[0]);
+					$("#imgPreviewBox").attr('hidden',false);
+    			}else {
+    				$("#imgPreviewBox").attr('hidden',true);
+    			}
+			});
+
+
+
+			$("#addIngredientForm").on("submit", function(e) {
+				e.preventDefault();
+
+				myApp.showPleaseWait();
+
+				console.log("Handling the submit");
+				//add error handling here: Validation of various items
+				//TODO
+
+			   //Generate the name for the file to be uploaded
+			   var fileName = (new Date().getTime()+'').substr(6,7) + "_" + $("#rRecipeRefPhoto")[0].files[0].name;
+
+
+			   //Upload the image
+			   insertObject($("#rRecipeRefPhoto")[0].files[0],fileName,function(resp){
+
+
+			   		//Response error handling
+			   		//TODO
+
+// 			   		console.log("insertObject resp");
+// 			   		console.log(resp);
+// 			   		console.log(resp.name);
+
+			   		//gather the form data
+					var data = {};
+					data.Title = $("#rTitle").val();
+					data.RefImageName = resp.name;
+					data.Category = $("#rCategory option:selected").val();
+
+					var ingredientObj = new IngredientClass();
+					ingredientObj.save(data,{
+								  success:function(){
+								  myApp.hidePleaseWait();
+								  alert("Ingredient successfully added");
+
+								  },
+								  error:function(e){
+								  myApp.hidePleaseWait();
+								  alert("Failed to add ingredient");
+								  console.log(e);
+								  }
+								  });
+
+					});
+			   });
+
+
+
+		});
+    </script>
+</html>

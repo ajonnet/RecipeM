@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Recipe Form</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <!-- Bootstrap -->
+            <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+            <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css">
+            <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+            <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+            <script src="//www.parsecdn.com/js/parse-1.6.7.min.js"></script>
+
+            <script>
+            /*
+                Parse.initialize("rfIsAJZM19Dh1kOv8eYnHizu8MjrjA6wrFrJOlvn", "fcfoBG221xYTkUXsSYhqNa3MnT2nSItyp1NiWAaM");
+                
+                var TestObject = Parse.Object.extend("TestObject");
+                var testObject = new TestObject();
+                testObject.save({foo: "bar2"}).then(function(object) {
+                                                    alert("yay! it worked");
+                                                    });
+                                                    */
+                </script>
+    
+    </head>
+    <body>
+        <h2>Add a Recipe</h2>
+        <br>
+        
+        <div class = "containter">
+            <form class="form-horizontal" >
+                <!-- Title -->
+                <div class="form-group">
+                    <label for="rTitle" class="control-label col-sm-2">Title</label>
+                    <div class="col-sm-10"> <input type="text" class="form-control" id="rTitle" placeholder="Paneer Bhujiya"></input> </div>
+                </div>
+                
+                <!-- Image -->
+                <div class="form-group">
+                    <label for="rRecipeRefPhoto" class="control-label col-sm-2">Refrence Photo</label>
+                    <div class="col-sm-10"> <input type="text" class="form-control" id="rRecipeRefPhoto" placeholder=""></input> </div>
+                </div>
+                
+                <!-- Veg/Non-Veg, Gluten-Free, Lactose Free, Vegan -->
+                <div class="form-group">
+                    <label class="control-label col-sm-2">Characteristics</label>
+                    
+                    <div class="col-sm-10">
+                        
+                        <div class = "col-sm-2">
+                            <!-- Veg/Non-Veg -->
+                            <select class="form-control">
+                                <option>Veg</option>
+                                <option>Non-Veg</option>
+                            </select>
+                        </div>
+                        
+                        <div class = "col-sm-10">
+                            &nbsp;&nbsp;
+                            <!-- Gluten Free -->
+                            <input type="checkbox"> Gluten Free</input>
+                            
+                            &nbsp;&nbsp;
+                            <!-- Lactose Free -->
+                            <input type="checkbox"> Lactose Free</input>
+                            
+                            &nbsp;&nbsp;
+                            <!-- Vegan -->
+                            <input type="checkbox"> Vegan</input>
+                        </div>
+                    </div>
+
+                </div>
+                
+                <!-- Time to cook -->
+                <div class="form-group">
+                    <label for="rTTCook" class="control-label col-sm-2">Time to cook</label>
+                    <div class = "col-sm-10 ">
+                        <div class = "input-group">
+                            <input type="text" class="form-control" id="rTTCook" placeholder="10"></input>
+                            <span class="input-group-addon">min</span>
+                        </div>
+                    </div>
+                </div>
+                
+                
+                <!-- Serving Quantity -->
+                <div class="form-group">
+                    <label for="rServingQty" class="control-label col-sm-2">Serving Quantity</label>
+                    <div class = "col-sm-10 ">
+                        <div class = "input-group">
+                            <input type="text" class="form-control" id="rServingQty" placeholder="4"></input>
+                            <span class="input-group-addon">people</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Ingredients -->
+                <div class="form-group">
+                    <label for="rIngredients" class="control-label col-sm-2">Ingredients</label>
+                    <div class = "col-sm-10">
+                        <div class = "input-group">
+                            <textarea class="form-control" id="rIngredients" placeholder="200gm Paneer"></textarea>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Cooking Steps -->
+                <div class="form-group">
+                    <label for="rSteps" class="control-label col-sm-2">CookingSteps</label>
+                    <div class = "col-sm-10">
+                        <div class = "input-group">
+                            <textarea class="form-control" id="rSteps" placeholder="Dice the Panneer"></textarea>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-sm-offset-2 col-sm-10">
+                    <button type="submit" class="btn btn-primary">Add Recipe</button>
+                </div>
+            </form>
+        </div>
+        
+        
+        <!--
+        <h3>Title</h3>
+        <input type="text" class="input-block-level" placeholder="Paneer Bhujiya">
+        <br>
+        
+        <h3>Ingredients</h3>
+        <textarea class="form-control"></textarea>
+        <br>
+         
+         -->
+    </body>
+</html>

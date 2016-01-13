@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>JS Try</title>
+            <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    </head>
+    <body>
+        <div id="output"> </div>
+
+
+
+        <h4>Steps</h4>
+        <ul id="mlist">
+            <li><span class="count">1</span> <Button class="btRemove" hidden = true>Remove</Button></li>
+        </ul>
+        <button id="btAdd">add elements</button>
+
+        <script>
+            $("#output").html($("#output").html() +  "function 2.2 executed <br/>");
+        </script>
+
+    </body>
+
+    <script>
+        $("#output").html($("#output").html() +  "function 3 executed <br/>");
+        $("#output").html($("#output").html() +  "function 4 executed <br/>");
+
+        $("#btAdd").on("click",function(event){
+                            $("#mlist li:last").clone().appendTo("#mlist");
+
+                       var elemCount = $("#mlist li:last .count");
+                       var intVal = parseInt(elemCount.text()) + 1;
+                       elemCount.html(intVal);
+
+                       if( $("#mlist li").length > 1)
+                       {
+                       $("#mlist .btRemove").attr("hidden",false);
+                       }
+
+                       });
+
+        $("#mlist").on("click.btRemove",function(event){
+
+                       if( $("#mlist li").length >= 2)
+                       {
+
+                       event.target.parentElement.remove();
+                       console.log("asdf");
+
+                       if( $("#mlist li").length == 1)
+                       {
+                       $("#mlist .btRemove").attr("hidden",true);
+                       }
+                       }
+
+
+
+                       });
+
+    </script>
+</html>

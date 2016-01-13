@@ -1,0 +1,1149 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+		<!-- Required meta tags always come first -->
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+		<meta http-equiv="x-ua-compatible" content="ie=edge">
+
+		<title>Dashboard</title>
+
+		<!-- Bootstrap -->
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+
+		<!-- DataTables -->
+		<link rel="stylesheet" href="https://cdn.datatables.net/1.10.10/css/dataTables.bootstrap.min.css">
+		<link rel="stylesheet" href="https://cdn.datatables.net/select/1.1.0/css/select.bootstrap.min.css">
+		<link rel="stylesheet" href="https://cdn.datatables.net/fixedheader/3.1.0/css/fixedHeader.bootstrap.min.css">
+		<link rel="stylesheet" href="https://cdn.datatables.net/colreorder/1.3.0/css/colReorder.bootstrap.min.css">
+		<link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.1.0/css/buttons.bootstrap.min.css">
+    </head>
+    <body>
+
+    <h2>&nbsp;Dashboard</h2>
+
+
+	<div id="dashTabs" role="tabpanel">
+		<!-- Nav tabs -->
+		<ul class="nav nav-tabs" role="tablist">
+		  <li class="nav-item">
+			<a class="nav-link active" id="ingredients-tab" data-toggle="tab" href="#ingredients" role="tab" aria-controls="ingredients">Ingredients</a>
+		  </li>
+		  <li class="nav-item">
+			<a class="nav-link" id="recipes-tab" data-toggle="tab" href="#recipes" role="tab" aria-controls="recipes">Recipes</a>
+		  </li>
+		</ul>
+
+		<!-- Tab panes -->
+		<div class="tab-content">
+		  <div class="tab-pane fade in active" id="ingredients" role="tabpanel" aria-labelledby="ingredients-tab">
+
+
+
+				<div class="col-sm-6">
+					<br/>
+					<button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#ingredientFormModal" data-backdrop="static" data-mode="Add">
+		  				Add
+					</button>
+					<button type="button" class="selectedRowHelperButtons btn btn-primary btn-sm" id='editIngrBt' disabled>
+		  				Edit
+					</button>
+					<button type="button" class="selectedRowHelperButtons btn btn-primary btn-sm" id='deleteIngrBt' disabled>
+		  				Delete
+					</button>
+					<br/><br/>
+
+					<p>List of Ingredients</p>
+					<table id="ingredientsTable" class="table table-striped table-bordered" cellspacing="0" width="100%">
+						<thead>
+							<tr>
+								<th>Title</th>
+								<th>Photo</th>
+								<th>Category</th>
+							</tr>
+						</thead>
+						<tfoot>
+							<tr>
+								<th>Title</th>
+								<th>Photo</th>
+								<th>Category</th>
+							</tr>
+						</tfoot>
+					</table>
+				</div>
+
+		  </div>
+
+		  <div class="tab-pane fade" id="recipes" role="tabpanel" aria-labelledby="recipes-tab">
+
+				<div class="col-sm-10">
+					<br/>
+					<button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#recipeFormModal" data-backdrop="static" data-mode="Add">
+						Add
+					</button>
+					<button type="button" class="selectedRowHelperButtons btn btn-primary btn-sm" id='editRecipeBt' disabled>
+						Edit
+					</button>
+					<button type="button" class="selectedRowHelperButtons btn btn-primary btn-sm" id='deleteRecipeBt' disabled>
+						Delete
+					</button>
+					<br/><br/>
+
+					<p>List of Recipes</p>
+					<table id="recipesTable" class="table table-striped table-bordered" cellspacing="0" width="100%">
+						<thead>
+							<tr>
+								<th>Title</th>
+								<th>Photo</th>
+								<th>Cook Time</th>
+								<th>Serving Qty</th>
+								<th>Is Veg</th>
+							</tr>
+						</thead>
+						<tfoot>
+							<tr>
+								<th>Title</th>
+								<th>Photo</th>
+								<th>Cook Time</th>
+								<th>Serving Qty</th>
+								<th>Is Veg</th>
+							</tr>
+						</tfoot>
+					</table>
+				</div>
+
+		  </div>
+
+		</div>
+	</div>
+
+
+		<!-- Modal Busy Indicator-->
+		<div class="modal fade" id="busyModal" tabindex="-1" role="dialog" aria-labelledby="busyLabel" aria-hidden="true">
+		  <div class="modal-dialog modal-lg" role="document">
+			<div class="modal-content">
+			  <div class="modal-header">
+				<h4 class="modal-title" id="busyLabel">Processing...</h4>
+			  </div>
+			  <div class="modal-body">
+				<div class="progress">
+					<div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width:100%"></div>
+				</div>
+			  </div>
+			</div>
+		  </div>
+		</div>
+
+
+		<!-- Modal Ingredient Form-->
+		<div class="modal fade" id="ingredientFormModal" tabindex="-1" role="dialog" aria-labelledby="formLabel" aria-hidden="true">
+		  <div class="modal-dialog modal-lg" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+					<h4 class="modal-title" id="formLabel">
+						<span id="addIngrTxt">Add Ingredient</span>
+						<span id="editIngrTxt">Edit Ingredient</span>
+					</h4>
+				</div>
+				<div class="modal-body">
+					<div class ="container-fluid">
+						<form class="form-horizontal" id="addIngredientForm" role="form">
+							<!-- Title -->
+							<div class="form-group row">
+								<label for="rTitle" class="control-label col-sm-2">Title</label>
+								<div class="col-sm-10">
+									<input type="text" class="form-control" id="rTitle" placeholder="Onion" required></input>
+								</div>
+							</div>
+
+							<!-- Image File-->
+							<div class="form-group row">
+								<label for="rIngrRefPhoto" class="control-label col-sm-2">Refrence Photo</label>
+								<div class="col-sm-10">
+									<input type="file" class="form-control" id="rIngrRefPhoto" required>
+									<span class="file-custom"></span>
+								</div>
+							</div>
+
+							<!-- Image File Preview Box-->
+							<div class="form-group row imgPreviewBox" for="rIngrRefPhoto" hidden>
+								<div class="col-sm-offset-2 col-sm-10">
+									<img src="" class="img-thumbnail" alt="Ingredient Img" width="304" height="236">
+								</div>
+							</div>
+
+							<!-- Ingredient Category -->
+							<div class="form-group row">
+								<label for="rCategory" class="control-label col-sm-2">Category</label>
+
+								<div class="col-sm-10">
+
+									<!-- Category -->
+									<select class="form-control" id="rCategory">
+										<option>Vegetable</option>
+										<option>Meat</option>
+										<option>Fruit</option>
+									</select>
+								</div>
+							</div>
+
+							<!--
+							<div class="form-group row">
+								<div class="col-sm-offset-2 col-sm-10">
+									<button type="submit" class="btn btn-primary">Add Ingredient</button>
+								</div>
+							</div>
+							-->
+						</form>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+					<button id="ingrFormSaveBt" type="button" class="btn btn-primary">Save</button>
+				</div>
+		  	</div>
+		  </div>
+		</div>
+
+
+		<!-- Modal Recipe Form-->
+		<div class="modal fade" id="recipeFormModal" tabindex="-1" role="dialog" aria-labelledby="recipeFormLabel" aria-hidden="true">
+		  <div class="modal-dialog modal-lg" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+					<h4 class="modal-title" id="recipeFormLabel">
+						<span id="addRecipeTxt">Add Recipe</span>
+						<span id="editRecipeTxt" hidden>Edit Recipe</span>
+					</h4>
+				</div>
+				<div class="modal-body">
+					<div class ="container-fluid">
+						<form class="form-horizontal" id="addRecipeForm" role="form">
+							<!-- Title -->
+							<div class="form-group row">
+								<label for="rTitle" class="control-label col-sm-2">Title</label>
+								<div class="col-sm-10">
+									<input type="text" class="form-control" id="rTitle" placeholder="Onion" required></input>
+								</div>
+							</div>
+
+							<!-- Image File-->
+							<div class="form-group row">
+								<label for="rRecipeRefPhoto" class="control-label col-sm-2">Refrence Photo</label>
+								<div class="col-sm-10">
+									<input type="file" class="form-control" id="rRecipeRefPhoto" required>
+									<span class="file-custom"></span>
+								</div>
+							</div>
+
+							<!-- Image File Preview Box-->
+							<div class="form-group row imgPreviewBox" for="rRecipeRefPhoto" hidden>
+								<div class="col-sm-offset-2 col-sm-10">
+									<img src="" class="img-thumbnail" alt="Recipe Img" width="304" height="236">
+								</div>
+							</div>
+
+
+							<!-- Veg/Non-Veg, Gluten-Free, Lactose Free, Vegan -->
+							<div class="form-group row">
+								<label for="rVegNonVegSel" class="control-label col-sm-2">Characteristics</label>
+								<div class = "col-sm-2">
+									<!-- Veg/Non-Veg -->
+									<select id="rVegNonVegSel" class="form-control">
+										<option>Veg</option>
+										<option>Non-Veg</option>
+									</select>
+								</div>
+								<div class = "col-sm-8">
+									<label class="checkbox-inline">
+										<!-- Gluten Free -->
+										<input id="rIsGlutenFree" type="checkbox">Gluten Free</input>
+									</label>
+
+									<label class="checkbox-inline">
+										<!-- Lactose Free -->
+										<input id="rIsLactoseFree" type="checkbox">Lactose Free</input>
+									</label>
+
+									<label class="checkbox-inline">
+										<!-- Vegan -->
+										<input id="rIsVegan" type="checkbox">Vegan</input>
+									</label>
+								</div>
+
+							</div>
+
+							<!-- Time to cook -->
+							<div class="form-group row">
+								<label for="rTTCook" class="control-label col-sm-2">Time to cook</label>
+								<div class = "col-sm-2">
+									<div class = "input-group">
+										<input type="text" class="form-control" id="rTTCook" placeholder="10"></input>
+										<span class="input-group-addon">min</span>
+									</div>
+								</div>
+							</div>
+
+							<!-- Serving Quantity -->
+							<div class="form-group row">
+								<label for="rServingQty" class="control-label col-sm-2">Serving Quantity</label>
+								<div class = "col-sm-2">
+									<div class = "input-group">
+										<input type="text" class="form-control" id="rServingQty" placeholder="4"></input>
+										<span class="input-group-addon">people</span>
+									</div>
+								</div>
+							</div>
+
+
+							<!-- Ingredients -->
+							<div class="form-group row">
+								<label for="rIngredients" class="control-label col-sm-2">Ingredients</label>
+								<div class = "col-sm-10">
+									<textarea class="form-control" id="rIngredients" placeholder="200gm Paneer"></textarea>
+								</div>
+							</div>
+
+							<!-- Cooking Steps -->
+							<div class="form-group row">
+								<label for="rSteps" class="control-label col-sm-2">CookingSteps</label>
+								<div class = "col-sm-10">
+									<textarea class="form-control" id="rSteps" placeholder="Dice the Panneer"></textarea>
+								</div>
+							</div>
+
+						</form>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+					<button id="recipeFormSaveBt" type="button" class="btn btn-primary">Save</button>
+				</div>
+			</div>
+		  </div>
+		</div>
+
+
+
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+		<script src="js/bootbox.min.js"></script>
+
+		<script type="text/javascript" src="js/lib.js"></script>
+
+		<script src="http://www.parsecdn.com/js/parse-1.6.7.min.js"></script>
+		<script src="https://apis.google.com/js/client.js"></script>
+
+		<!--DataTables-->
+		<script src="https://cdn.datatables.net/1.10.10/js/jquery.dataTables.min.js"></script>
+		<script src="https://cdn.datatables.net/1.10.10/js/dataTables.bootstrap.min.js"></script>
+		<script src="https://cdn.datatables.net/select/1.1.0/js/dataTables.select.min.js"></script>
+		<script src="https://cdn.datatables.net/buttons/1.1.0/js/dataTables.buttons.min.js"></script>
+		<script src="https://cdn.datatables.net/buttons/1.1.0/js/buttons.bootstrap.min.js"></script>
+		<script src="https://cdn.datatables.net/buttons/1.1.0/js/buttons.colVis.min.js"></script>
+		<script src="https://cdn.datatables.net/colreorder/1.3.0/js/dataTables.colReorder.min.js"></script>
+		<script src="https://cdn.datatables.net/fixedheader/3.1.0/js/dataTables.fixedHeader.min.js"></script>
+
+    </body>
+
+    <script>
+    	var ingredientsTable;
+    	var recipesTable;
+
+    	var IngredientClass = Parse.Object.extend("Ingredient");
+    	var RecipeClass = Parse.Object.extend("Recipe");
+
+    	//Updates the content of Ingredient Form Modal
+    	function updateIngredientFormModalForItem(item,editMode) {
+
+    		var modal = $('#ingredientFormModal');
+
+    		//Show the appropriate Title
+    		modal.find('#addIngrTxt').prop("hidden",editMode);
+    		modal.find('#editIngrTxt').prop("hidden",!editMode);
+
+    		if(editMode && item){
+
+				modal.find('#rTitle').val(item["Title"]); //--Update Title
+
+				//Ingredient Photo
+				var imgPrevBox = modal.find('.imgPreviewBox[for=rIngrRefPhoto]');
+				modal.find('#rIngrRefPhoto').val(""); //--Clear ImageFileInput value
+				if(item["RefImageName"] && (item["RefImageName"].length > 0)){
+					imgPrevBox.attr('hidden',false);
+					var imgHtmlLink = IMG_URL_PREFIX + item["RefImageName"];
+					imgPrevBox.find('.img-thumbnail').attr('src',imgHtmlLink);
+
+				}else {
+					imgPrevBox.attr('hidden',true);
+					imgPrevBox.find('.img-thumbnail').attr('src',"");
+				}
+
+				//Category
+				modal.find('#rCategory option').filter(function(i, e) { return $(e).text() == item["Category"]}).prop('selected',true);
+
+				modal.data("editMode",true);
+				modal.data("IngredientObject",item['IngredientObject']);
+    		}else {
+
+    			//Reset all fields
+				modal.find('#rTitle').val(""); //--Clear Title
+
+				modal.find('#rIngrRefPhoto').val(""); //--Clear Image
+				var imgPrevBox = modal.find('.imgPreviewBox[for=rIngrRefPhoto]');
+				imgPrevBox.attr('hidden',true);
+				imgPrevBox.find('.img-thumbnail').attr('src',"");
+
+				modal.find("#rCategory :nth(0)").prop("selected","selected"); //--Reset Category selection
+
+				modal.data("editMode",false);
+				modal.removeData("IngredientObject");
+    		}
+    	}
+
+    	//Updates the content of Recipe Form Modal
+    	function updateRecipeFormModalForItem(item,editMode) {
+
+    		var modal = $('#recipeFormModal');
+
+    		//Show the appropriate Title
+    		modal.find('#addRecipeTxt').prop("hidden",editMode);
+    		modal.find('#editRecipeTxt').prop("hidden",!editMode);
+
+    		if(editMode && item){
+
+    			//Title
+				modal.find('#rTitle').val(item["Title"]); //--Update Title
+
+				//Recipe Photo
+				var imgPrevBox = modal.find('.imgPreviewBox[for=rRecipeRefPhoto]');
+				modal.find('#rRecipeRefPhoto').val(""); //--Clear ImageFileInput value
+				if(item["RefImageName"] && (item["RefImageName"].length > 0)){
+					imgPrevBox.attr('hidden',false);
+					var imgHtmlLink = IMG_URL_PREFIX + item["RefImageName"];
+					imgPrevBox.find('.img-thumbnail').attr('src',imgHtmlLink);
+
+				}else {
+					imgPrevBox.attr('hidden',true);
+					imgPrevBox.find('.img-thumbnail').attr('src',"");
+				}
+
+				//Veg/Non-Veg Category
+				var targetOption = (item["IsVeg"])?"Veg":"Non-Veg";
+				modal.find('#rVegNonVegSel option').filter(function(i, e) { return $(e).text() === targetOption}).prop('selected',true);
+				//LactoseFree
+				modal.find("#rIsLactoseFree").prop("checked",item["IsLactoseFree"]);
+				//GlutenFree
+				modal.find("#rIsGlutenFree").prop("checked",item["IsGlutenFree"]);
+				//Vegan
+				modal.find("#rIsVegan").prop("checked",item["IsVegan"]);
+
+				//TimeToCook
+				modal.find("#rTTCook").val(item["TimeToCook"]);
+				//ServingQty
+				modal.find("#rServingQty").val(item["ServingQty"]);
+				//Steps to Cook
+				modal.find("#rSteps").val(item["StepsToCook"]);
+				//Ingredients
+				modal.find("#rIngredients").val(item["Ingredients"]);
+
+				modal.data("editMode",true);
+				modal.data("RecipeObject",item['RecipeObject']);
+    		}else {
+
+    			//Reset all fields
+    			//Title
+				modal.find('#rTitle').val(""); //--Update Title
+
+				//Recipe Photo
+				var imgPrevBox = modal.find('.imgPreviewBox[for=rRecipeRefPhoto]');
+				imgPrevBox.attr('hidden',true);
+				imgPrevBox.find('.img-thumbnail').attr('src',"");
+				modal.find('#rRecipeRefPhoto').val(""); //--Clear ImageFileInput value
+
+
+				//Veg/Non-Veg Category
+				modal.find('#rVegNonVegSel :nth(0)').prop("selected",true);	//Choose the first option
+				//LactoseFree
+				modal.find("#rIsLactoseFree").prop("checked",false);
+				//GlutenFree
+				modal.find("#rIsGlutenFree").prop("checked",false);
+				//Vegan
+				modal.find("#rIsVegan").prop("checked",false);
+
+				//TimeToCook
+				modal.find("#rTTCook").val("");
+				//ServingQty
+				modal.find("#rServingQty").val("");
+				//Steps to Cook
+				modal.find("#rSteps").val("");
+				//Ingredients
+				modal.find("#rIngredients").val("");
+
+				modal.data("editMode",false);
+				modal.removeData("RecipeObject");
+    		}
+    	}
+
+		function doReqInitialization() {
+			//Parse Initialization
+			Parse.initialize("rfIsAJZM19Dh1kOv8eYnHizu8MjrjA6wrFrJOlvn", "fcfoBG221xYTkUXsSYhqNa3MnT2nSItyp1NiWAaM");
+
+			//Google API Initialization
+			window.setTimeout(function(){handleClientLoad();}, 1000);
+
+			//Initialize ingredients table
+			initializeIngredientsTable();
+
+			//Initialize Recipe table
+			initializeRecipesTable();
+		}
+
+		//Generates TableRow data for a Ingredient ParseObject
+		function rowDataForIngrParseObject(parseObj) {
+			var title = parseObj.get('Title');
+			var refImageName = parseObj.get('RefImageName');
+			var category = parseObj.get('Category');
+			var objId = parseObj.get('id');
+
+			var rowData = {
+				'ObjId' : objId,
+				'Title' : title,
+				'RefImageName' : refImageName,
+				'Category' : category,
+				'IngredientObject' : parseObj
+			};
+
+			return rowData;
+		}
+
+		//Generates TableRow data for a Recipe ParseObject
+		function rowDataForRecipeParseObject(parseObj) {
+			var title = parseObj.get('Title');
+			var refImageName = parseObj.get('RefImageName');
+			var stepsToCook = parseObj.get('StepsToCook');
+			var ingredients = parseObj.get('Ingredients');
+			var servingQty = parseObj.get('ServingQty');
+			var timeToCook = parseObj.get('TimeToCook');
+			var isVeg = parseObj.get('Veg');
+			var isLactoseFree = parseObj.get('LactoseFree');
+			var isGlutenFree = parseObj.get('GlutenFree');
+			var isVegan = parseObj.get('Vegan');
+			var objId = parseObj.get('id');
+
+			var rowData = {
+				'ObjId' : objId,
+				'Title' : title,
+				'RefImageName' : refImageName,
+				'StepsToCook' : stepsToCook,
+				'Ingredients' : ingredients,
+				'ServingQty' : servingQty,
+				'TimeToCook' : timeToCook,
+				'IsVeg' : isVeg,
+				'IsLactoseFree' : isLactoseFree,
+				'IsGlutenFree' : isGlutenFree,
+				'IsVegan' : isVegan,
+				'RecipeObject' : parseObj
+			};
+
+			return rowData;
+		}
+
+		//Function to update Ingredients table from provided Ingredient(parse) objects
+		function updateIngrediantTableForObjects(results) {
+
+			//Initialize data for table
+			var transData = [];
+			for(var i=0; i<results.length; i++) {
+				var rowData = rowDataForIngrParseObject(results[i]);
+				transData.push(rowData);
+			}
+
+			//Initialize table
+			var table = $('#ingredientsTable').DataTable({
+				fixedHeader: true,
+				colReorder: true,
+				select:{
+					style: 'os'
+				},
+				data:transData,
+				columns: [
+					{ data: 'Title' },
+					{ data: 'RefImageName' },
+					{ data: 'Category' }
+				]
+			});
+
+			//Add selection event handler to table
+			table.on('select',function(e,dt,type,indexes){
+
+				//Enable edit/delete Ingredient Button
+				$("#ingredients[role=tabpanel] .selectedRowHelperButtons").prop('disabled',false);
+			});
+
+			//Add de-selection event handler to table
+			table.on('deselect',function(e,dt,type,indexes){
+
+				//If there are no selected items, then disable edit/delete Ingredient Button
+				if(dt.rows({selected:true}).count() == 0) {
+					$("#ingredients[role=tabpanel] .selectedRowHelperButtons").prop('disabled',true);
+				}
+			});
+
+			table.on('draw',function(e,settings){
+
+				//Re-evaluate whether RowHelperButtons should be enabled or disabled
+				if(table.rows({selected:true}).count() == 0) {
+					$("#ingredients[role=tabpanel] .selectedRowHelperButtons").prop('disabled',true);
+				}else {
+					$("#ingredients[role=tabpanel] .selectedRowHelperButtons").prop('disabled',false);
+				}
+
+			});
+
+			//save the reference to table
+			ingredientsTable = table;
+		}
+
+		//Function to update Recipes table from provided Recipe(parse) objects
+		function updateRecipeTableForObjects(results){
+
+			//Initialize data for table
+			var transData = [];
+			for(var i=0; i<results.length; i++) {
+				var rowData = rowDataForRecipeParseObject(results[i]);
+				transData.push(rowData);
+			}
+
+			//Initialize table
+			var table = $('#recipesTable').DataTable({
+				fixedHeader: true,
+				colReorder: true,
+				select:{
+					style: 'os'
+				},
+				data:transData,
+				columns: [
+					{ data: 'Title' },
+					{ data: 'RefImageName' },
+					{ data: 'TimeToCook' },
+					{ data: 'ServingQty' },
+					{ data: 'IsVeg' }
+				]
+			});
+
+			//Add selection event handler to table
+			table.on('select',function(e,dt,type,indexes){
+
+				//Enable edit/delete Ingredient Button
+				$("#recipes[role=tabpanel] .selectedRowHelperButtons").prop('disabled',false);
+			});
+
+			//Add de-selection event handler to table
+			table.on('deselect',function(e,dt,type,indexes){
+
+				//If there are no selected items, then disable edit/delete Ingredient Button
+				if(dt.rows({selected:true}).count() == 0) {
+					$("#recipes[role=tabpanel] .selectedRowHelperButtons").prop('disabled',true);
+				}
+			});
+
+			table.on('draw',function(e,settings){
+
+				//Re-evaluate whether RowHelperButtons should be enabled or disabled
+				if(table.rows({selected:true}).count() == 0) {
+					$("#recipes[role=tabpanel] .selectedRowHelperButtons").prop('disabled',true);
+				}else {
+					$("#recipes[role=tabpanel] .selectedRowHelperButtons").prop('disabled',false);
+				}
+
+			});
+
+			//save the reference to table
+			recipesTable = table;
+		}
+
+		function initializeIngredientsTable() {
+			var query = new Parse.Query(IngredientClass);
+			query.select('Title','RefImageName','Category');
+			query.find().then(function(results){
+				//console.log("Fetch query success with objects count: " + results.length);
+				updateIngrediantTableForObjects(results);
+			});
+		}
+
+		function initializeRecipesTable(){
+			var query = new Parse.Query(RecipeClass);
+			query.select('Title','RefImageName','StepsToCook','Ingredients','ServingQty','TimeToCook','Veg','LactoseFree','GlutenFree','Vegan');
+			query.find().then(function(results){
+				//console.log("Fetch query success with objects count: " + results.length);
+				updateRecipeTableForObjects(results);
+			});
+		}
+
+		//Handles Updates ImagePreviewBox related to ImageFileInputElement
+		//Works for both recipe and ingredients
+		function handleImgPrevBoxForImgFileInputElem(ImgFileElem) {
+			var imgPrevBox = $(".imgPreviewBox[for=" + ImgFileElem.id +"]");
+			var imgElem = imgPrevBox.find(".img-thumbnail");
+
+			var inputElem = ImgFileElem;
+			if (inputElem.files && inputElem.files[0]) {
+				updateImgElemFromFile(imgElem,inputElem.files[0]);
+				imgPrevBox.attr('hidden',false);
+			}else {
+				imgPrevBox.attr('hidden',true);
+			}
+		}
+
+		$(document).ready(function() {
+
+			doReqInitialization();
+
+			//Select the default Tab
+			$('#dashTabs a[href="#ingredients"]').tab('show');
+
+
+	  		//Update <Image> element for Ingredient Photo, when one is chosen
+			$("#rIngrRefPhoto").on("change",function(e){
+				handleImgPrevBoxForImgFileInputElem(this);
+			});
+
+			//Update <Image> element for Ingredient Photo, when one is chosen
+			$("#rRecipeRefPhoto").on("change",function(e){
+				handleImgPrevBoxForImgFileInputElem(this);
+			});
+
+
+			//Edit Button Handling for Ingredient
+			$('#editIngrBt').on('click',function(event){
+
+				//Update the modal values
+				var op = ingredientsTable.rows({selected: true}).data();
+				var selectedItem = op[0];
+				updateIngredientFormModalForItem(selectedItem,true);
+
+				//Show the modal
+				var modal = $('#ingredientFormModal');
+				modal.modal('show');
+			});
+
+			//Edit Button Handling for Recipe
+			$('#editRecipeBt').on('click',function(event){
+
+				//Update the modal values
+				var op = recipesTable.rows({selected: true}).data();
+				var selectedItem = op[0];
+				updateRecipeFormModalForItem(selectedItem,true);
+
+				//Show the modal
+				var modal = $('#recipeFormModal');
+				modal.modal('show');
+			});
+
+			//Delete Button Handling for Ingredient
+			$('#deleteIngrBt').on('click',function(event){
+
+				var selectedRows = ingredientsTable.rows({selected:true});
+				var selectedItems = ingredientsTable.rows({selected:true}).data();
+				var msg = "<span class='text-primary'>" + selectedItems.count() + " item</span> selected for deletion. <br/> Are you sure?";
+				bootbox.confirm(msg,function(result){
+
+					if(result){//Action confirmed by user
+						$("#busyModal").modal('show');
+
+						//Finish Handler
+						var finishHandler = function(err){
+							$("#busyModal").modal('hide');
+
+							var msg;
+							if(!err) { //Success
+								msg = "Items deleted successfullly.";
+							}else { //Failure
+								msg = "Failed to perform delete operation.";
+								console.log(err);
+							}
+							bootbox.alert(msg);
+						};
+
+						//Generate the array of Parse objects from the data associate to table
+						var ingrObjs = [];
+						var imgFileNames = [];
+						for(var i=0;i<selectedItems.length;i++){
+							var ingrObj = selectedItems[i]['IngredientObject'];
+							ingrObjs.push(ingrObj);
+							var imgFileName = selectedItems[i]['RefImageName'];
+							imgFileNames.push(imgFileName);
+						}
+
+						//Delete the parse Objects
+						Parse.Object.destroyAll(ingrObjs).then(
+						function(objsDeleted){
+
+							//Remove the images from GoogleStorageServer
+							deleteObjects(imgFileNames,function(errors){
+								//Update the Table
+								selectedRows.remove().draw();
+
+								finishHandler();
+
+								//Log if any error happened during deleting the files
+								if(errors) { //Success
+									console.log("Failed to delete [" + errors.length + "]image files from google Storage.");
+									console.log(errors);
+								}
+							});
+						},
+						function(error){
+							finishHandler(error);
+						});
+					}
+				});
+			});
+
+			//Delete Button Handling for Recipe
+			$('#deleteRecipeBt').on('click',function(event){
+
+				var selectedRows = recipesTable.rows({selected:true});
+				var selectedItems = recipesTable.rows({selected:true}).data();
+				var msg = "<span class='text-primary'>" + selectedItems.count() + " item</span> selected for deletion. <br/> Are you sure?";
+				bootbox.confirm(msg,function(result){
+
+					if(result){//Action confirmed by user
+						$("#busyModal").modal('show');
+
+						//Finish Handler
+						var finishHandler = function(err){
+							$("#busyModal").modal('hide');
+
+							var msg;
+							if(!err) { //Success
+								msg = "Items deleted successfullly.";
+							}else { //Failure
+								msg = "Failed to perform delete operation.";
+								console.log(err);
+							}
+							bootbox.alert(msg);
+						};
+
+						//Generate the array of Parse objects from the data associate to table
+						var recipeObjs = [];
+						var imgFileNames = [];
+						for(var i=0;i<selectedItems.length;i++){
+							var recipeObj = selectedItems[i]['RecipeObject'];
+							recipeObjs.push(recipeObj);
+							var imgFileName = selectedItems[i]['RefImageName'];
+							imgFileNames.push(imgFileName);
+						}
+
+						//Delete the parse Objects
+						Parse.Object.destroyAll(recipeObjs).then(
+						function(objsDeleted){
+
+							//Remove the images from GoogleStorageServer
+							deleteObjects(imgFileNames,function(errors){
+								//Update the Table
+								selectedRows.remove().draw();
+
+								finishHandler();
+
+								//Log if any error happened during deleting the files
+								if(errors) { //Success
+									console.log("Failed to delete [" + errors.length + "]image files from google Storage.");
+									console.log(errors);
+								}
+							});
+						},
+						function(error){
+							finishHandler(error);
+						});
+					}
+				});
+			});
+
+			//Add Button Handling for Ingredient
+			$('#ingredientFormModal').on('show.bs.modal',function(event){
+
+				var button = $(event.relatedTarget);
+				var recp = button.data('mode');
+
+				if(recp && recp === 'Add') {
+					//Reset all fields
+					updateIngredientFormModalForItem(null,false);
+				}
+			});
+
+			//Add Button Handling for Recipe
+			$('#recipeFormModal').on('show.bs.modal',function(event){
+
+				var button = $(event.relatedTarget);
+				var recp = button.data('mode');
+
+				if(recp && recp === 'Add') {
+					//Reset all fields
+					updateRecipeFormModalForItem(null,false);
+				}
+			});
+
+			//Script to add Ingredient on SaveBt
+			$("#ingrFormSaveBt").on("click",function(e) {
+				//$("#addIngredientForm").submit(); -- to be tested, form auto error handling
+
+				//Error handling here: Validation of various items
+				//TODO
+
+
+				var isEditMode;
+
+				//Update UI
+				$("#ingredientFormModal").modal('hide');
+				$("#busyModal").modal('show');
+
+				//Finish Handler
+				var finishHandler = function(err){
+					$("#busyModal").modal('hide');
+
+					var msg;
+					if(!err) { //Success
+						var msgUpdateSuccess = "Ingredient updated successfully.";
+						var msgAddSuccess = "Ingredient added successfully.";
+						msg = (isEditMode)?msgUpdateSuccess:msgAddSuccess;
+
+
+					}else { //Failure
+						var msgUpdateFailed = "Failed to update Ingredient, please try again.";
+						var msgAddFailed = "Failed to add Ingredient, please try again.";
+						msg = (isEditMode)?msgUpdateFailed:msgAddFailed;
+						console.log(error);
+					}
+					bootbox.alert(msg);
+				};
+
+				//Fetches values from the form and generates the data Object
+				//works for both edit and add mode
+				var generateDataForParseObjectFromIngrForm = function(formModal){
+					var data = {};
+
+					//RefImageName
+					var selectedfile = formModal.find('#rIngrRefPhoto')[0].files[0];
+					if(selectedfile) {
+						data.RefImageName = (new Date().getTime()+'').substr(6,7) + "_" + selectedfile.name;
+					}else {
+
+						//Check if image has been removed
+						var imgSrc = formModal.find('.imgPreviewBox[for=rIngrRefPhoto] .img-thumbnail').attr('src');
+						if(imgSrc.length == 0) { //Image Removed
+							data.RefImageName = ""; //Signifies that image has been removed
+						}
+					}
+
+					data.Title = formModal.find("#rTitle").val();
+					data.Category = formModal.find("#rCategory option:selected").val();
+
+					return data;
+				}
+
+				//Update the related Image object
+				//Uses the info from parseObjectData to upload the image selected in form modal
+				var updateImageObject = function(parseObjdata,formModal, callback) {
+					//Upload Image if required
+					if(parseObjdata.RefImageName && (parseObjdata.RefImageName.length>0) ) { //New Image selected
+						//Remove Previous Image
+						//TODO
+
+						var selectedfile = formModal.find('#rIngrRefPhoto')[0].files[0];
+						insertObject(selectedfile,parseObjdata.RefImageName,function(resp){
+							//Failure Handling TODO
+
+							callback();
+						});
+					}else if(parseObjdata.RefImageName && (parseObjdata.RefImageName.length === 0)){ //Image Removed
+						//Remove Image
+						//Remove functionality not implemented yet
+						//TODO
+						console.log("Should not reach here");
+
+						callback();
+					}else {
+
+						callback();
+					}
+				}
+
+
+				//Execution, add/edit Ingredient item
+				var ingrFormModal = $("#ingredientFormModal");
+				isEditMode = ingrFormModal.data("editMode");
+				var dataForParseObject = generateDataForParseObjectFromIngrForm(ingrFormModal);
+				updateImageObject(dataForParseObject,ingrFormModal,function(error){
+
+					if(!error){ //Success, image updated
+
+						//Save Parse Object
+						var ingrParseObject = (isEditMode)? ingrFormModal.data("IngredientObject"):
+															(new IngredientClass());
+						ingrParseObject.save(dataForParseObject,{
+							success:function(){ //Parse object saved successfully
+
+								//Update the Table
+								var newRowData = rowDataForIngrParseObject(ingrParseObject);
+								if(isEditMode){
+									//Update the related row in Table
+									ingredientsTable.row({selected: true}).data(newRowData).draw();
+
+								}else { //Add Mode
+									//Add a new row to table
+									ingredientsTable.row.add(newRowData).draw();
+								}
+
+								finishHandler();
+							},
+							failure:function(err){ //Failed to save parse object
+								finishHandler(err);
+							}
+						});
+
+					}else { //Failure, image update failed
+						finishHandler(error);
+					}
+				});
+
+			});
+
+			//Script to add Recipe on SaveBt
+			$("#recipeFormSaveBt").on("click",function(e) {
+				//Error handling here: Validation of various items
+				//TODO
+
+
+				var isEditMode;
+
+				//Update UI
+				$("#recipeFormModal").modal('hide');
+				$("#busyModal").modal('show');
+
+				//Finish Handler
+				var finishHandler = function(err){
+					$("#busyModal").modal('hide');
+
+					var msg;
+					if(!err) { //Success
+						var msgUpdateSuccess = "Recipe updated successfully.";
+						var msgAddSuccess = "Recipe added successfully.";
+						msg = (isEditMode)?msgUpdateSuccess:msgAddSuccess;
+
+
+					}else { //Failure
+						var msgUpdateFailed = "Failed to update Recipe, please try again.";
+						var msgAddFailed = "Failed to add Recipe, please try again.";
+						msg = (isEditMode)?msgUpdateFailed:msgAddFailed;
+						console.log(error);
+					}
+					bootbox.alert(msg);
+				};
+
+				//Fetches values from the form and generates the data Object
+				//works for both edit and add mode
+				var generateDataForParseObjectFromIngrForm = function(formModal){
+					var data = {};
+
+					//RefImageName
+					var selectedfile = formModal.find('#rRecipeRefPhoto')[0].files[0];
+					if(selectedfile) {
+						data.RefImageName = (new Date().getTime()+'').substr(6,7) + "_" + selectedfile.name;
+					}else {
+
+						//Check if image has been removed
+						var imgSrc = formModal.find('.imgPreviewBox[for=rRecipeRefPhoto] .img-thumbnail').attr('src');
+						if(imgSrc.length == 0) { //Image Removed
+							data.RefImageName = ""; //Signifies that image has been removed
+						}
+					}
+
+					data.Title = formModal.find("#rTitle").val();
+					data.StepsToCook = formModal.find("#rSteps").val();
+					data.Ingredients = formModal.find("#rIngredients").val();
+					data.ServingQty = parseInt(formModal.find("#rServingQty").val());
+					data.TimeToCook = parseInt(formModal.find("#rTTCook").val());
+					data.Veg =  (formModal.find("#rVegNonVegSel option:selected").val() === "Veg");
+					data.LactoseFree = formModal.find("#rIsLactoseFree").prop('checked');
+					data.GlutenFree = formModal.find("#rIsVeganFree").prop('checked');
+					data.Vegan = formModal.find("#rIsVegan").prop('checked');
+
+					return data;
+				}
+
+				//Update the related Image object
+				//Uses the info from parseObjectData to upload the image selected in form modal
+				var updateImageObject = function(parseObjdata,formModal, callback) {
+					//Upload Image if required
+					if(parseObjdata.RefImageName && (parseObjdata.RefImageName.length>0) ) { //New Image selected
+						//Remove Previous Image
+						//TODO
+
+						var selectedfile = formModal.find('#rRecipeRefPhoto')[0].files[0];
+						insertObject(selectedfile,parseObjdata.RefImageName,function(resp){
+							//Failure Handling TODO
+
+							callback();
+						});
+					}else if(parseObjdata.RefImageName && (parseObjdata.RefImageName.length === 0)){ //Image Removed
+						//Remove Image
+						//Remove functionality not implemented yet
+						//TODO
+						console.log("Should not reach here");
+
+						callback();
+					}else {
+
+						callback();
+					}
+				}
+
+
+				//Execution, add/edit Ingredient item
+				var recipeFormModal = $("#recipeFormModal");
+				isEditMode = recipeFormModal.data("editMode");
+				var dataForParseObject = generateDataForParseObjectFromIngrForm(recipeFormModal);
+				updateImageObject(dataForParseObject,recipeFormModal,function(error){
+
+					if(!error){ //Success, image updated
+
+						//Save Parse Object
+						var recipeParseObject = (isEditMode)? recipeFormModal.data("RecipeObject"):
+															(new RecipeClass());
+						recipeParseObject.save(dataForParseObject,{
+							success:function(){ //Parse object saved successfully
+
+								//Update the Table
+								var newRowData = rowDataForRecipeParseObject(recipeParseObject);
+								if(isEditMode){
+									//Update the related row in Table
+									recipesTable.row({selected: true}).data(newRowData).draw();
+
+								}else { //Add Mode
+									//Add a new row to table
+									recipesTable.row.add(newRowData).draw();
+								}
+
+								finishHandler();
+							},
+							failure:function(err){ //Failed to save parse object
+								finishHandler(err);
+							}
+						});
+
+					}else { //Failure, image update failed
+						finishHandler(error);
+					}
+				});
+			});
+		});
+    </script>
+</html>

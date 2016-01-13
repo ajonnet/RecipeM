@@ -1,0 +1,240 @@
+<html>
+    <head>
+        <script type="text/javascript">
+            // Your Client ID can be retrieved from your project in the Google
+            // Developer Console, https://console.developers.google.com
+            var CLIENT_ID = '17910566848-47ted067retge8h05fo5gf0r4a5svs1d.apps.googleusercontent.com';
+
+            var SCOPES = ['https://www.googleapis.com/auth/drive.metadata.readonly',
+                          'https://www.googleapis.com/auth/drive'];
+
+            /**
+             * Check if current user has authorized this application.
+             */
+        function checkAuth() {
+            gapi.auth.authorize(
+                                {
+                                'client_id': CLIENT_ID,
+                                'scope': SCOPES.join(' '),
+                                'immediate': true
+                                }, handleAuthResult);
+        }
+
+        /**
+         * Handle response from authorization server.
+         *
+         * @param {Object} authResult Authorization result.
+         */
+        function handleAuthResult(authResult) {
+            var authorizeDiv = document.getElementById('authorize-div');
+            if (authResult && !authResult.error) {
+                // Hide auth UI, then load client library.
+                authorizeDiv.style.display = 'none';
+                loadDriveApi();
+            } else {
+                // Show auth UI, allowing the user to initiate authorization by
+                // clicking authorize button.
+                authorizeDiv.style.display = 'inline';
+            }
+        }
+
+        /**
+         * Initiate auth flow in response to user clicking authorize button.
+         *
+         * @param {Event} event Button click event.
+         */
+        function handleAuthClick(event) {
+            gapi.auth.authorize(
+                                {client_id: CLIENT_ID, scope: SCOPES, immediate: false},
+                                handleAuthResult);
+                                return false;
+        }
+
+        /**
+         * Load Drive API client library.
+         */
+        function loadDriveApi() {
+            gapi.client.load('drive', 'v2', listFiles);
+        }
+
+        /**
+         * Print files.
+         */
+        function listFiles() {
+
+            var callback = function(files){
+
+                if (files && files.length > 0) {
+                    for(var i=0; i<files.length;i++)
+                    appendPre(files[i].title);
+
+                }else {
+                    appendPre("No files found");
+                }
+
+            }
+
+            var files = retrieveAllFiles(callback);
+            /*
+            var request = gapi.client.drive.files.list({
+                                                       'maxResults': 50
+                                                       });
+
+           request.execute(function(resp) {
+                           appendPre('Files:');
+                           var files = resp.items;
+                           if (files && files.length > 0) {
+
+                           for (var i = 0; i < files.length; i++) {
+                           var file = files[i];
+                           appendPre(file.title + ' (' + file.id + ')');
+                           //printFile(file.id);
+                           }
+                           } else {
+                           appendPre('No files found.');
+                           }
+                           });*/
+        }
+
+        function printFile(fileId) {
+            var request = gapi.client.drive.files.get({
+                                                      'fileId': fileId
+                                                      });
+              request.execute(function(resp) {
+                              if(!resp.error) {
+                              console.log('Title: ' + resp.title);
+                              console.log('Description: ' + resp.description);
+                              console.log('MIME type: ' + resp.mimeType);
+                              }else {
+                              console.log(resp.error);
+                              }
+
+
+                              });
+        }
+
+        function insertFile(fileData, callback) {
+            const boundary = '-------314159265358979323846';
+            const delimiter = "\r\n--" + boundary + "\r\n";
+            const close_delim = "\r\n--" + boundary + "--";
+
+            var reader = new FileReader();
+            reader.readAsBinaryString(fileData);
+            reader.onload = function(e) {
+                var contentType = fileData.type || 'application/octet-stream';
+                var metadata = {
+                    'parents': [{
+                                "kind": "drive#fileLink",
+                                "id": "0B4N46yiAx-TcQVo0dzBXd2lsbms"
+                                }],
+                    'title': fileData.name,
+                    'mimeType': contentType
+                };
+
+                var base64Data = btoa(reader.result);
+                var multipartRequestBody =
+                delimiter +
+                'Content-Type: application/json\r\n\r\n' +
+                JSON.stringify(metadata) +
+                delimiter +
+                'Content-Type: ' + contentType + '\r\n' +
+                'Content-Transfer-Encoding: base64\r\n' +
+                '\r\n' +
+                base64Data +
+                close_delim;
+
+                var request = gapi.client.request({
+                                                  'path': '/upload/drive/v2/files',
+                                                  'method': 'POST',
+                                                  'params': {'uploadType': 'multipart'},
+                                                  'headers': {
+                                                  'Content-Type': 'multipart/mixed; boundary="' + boundary + '"'
+                                                  },
+                                                  'body': multipartRequestBody});
+                                                  if (!callback) {
+                                                      callback = function(file) {
+                                                          console.log(file)
+                                                      };
+                                                  }
+                                                  request.execute(callback);
+            }
+        }
+
+        function retrieveAllFiles(callback) {
+            var retrievePageOfFiles = function(request, result) {
+                request.execute(function(resp) {
+                                result = result.concat(resp.items);
+                                var nextPageToken = resp.nextPageToken;
+                                if (nextPageToken) {
+                                request = gapi.client.drive.files.list({
+                                                                       //'q': "mimeType = 'application/vnd.google-apps.folder'",
+                                                                       'pageToken': nextPageToken
+                                                                       });
+                                retrievePageOfFiles(request, result);
+                                } else {
+                                callback(result);
+                                }
+                                });
+            }
+            var initialRequest = gapi.client.drive.files.list({
+            'q': "mimeType = 'application/vnd.google-apps.folder'"
+            });
+            retrievePageOfFiles(initialRequest, []);
+        }
+
+        /**
+         * Append a pre element to the body containing the given message
+         * as its text node.
+         *
+         * @param {string} message Text to be placed in pre element.
+         */
+        function appendPre(message) {
+            var pre = document.getElementById('output');
+            var textContent = document.createTextNode(message + '\n');
+            pre.appendChild(textContent);
+        }
+
+        var openFile = function(event) {
+            var input = event.target;
+
+            var reader = new FileReader();
+            reader.onload = function(){
+                var dataURL = reader.result;
+                var output = document.getElementById('Imgoutput');
+                output.src = dataURL;
+            };
+            reader.readAsDataURL(input.files[0]);
+        };
+
+        var uploadFile = function() {
+           var input = document.getElementById('fInput');
+
+           insertFile(input.files[0],function(file){
+                        console.log(file);
+                        alert("File uploaded");
+                      });
+        }
+
+            </script>
+        <script src="https://apis.google.com/js/client.js?onload=checkAuth">
+            </script>
+    </head>
+    <body>
+
+        <div>
+            <input id="fInput" type='file' accept='image/*' onchange='openFile(event)'><br/>
+            <img id='Imgoutput' height=50 width=50/>
+            <br/>
+            <button type="button" onclick="uploadFile()">Upload File</button>
+        <div>
+
+        <div id="authorize-div" style="display: none">
+            <span>Authorize access to Drive API</span>
+            <!--Button for the user to click to initiate auth sequence -->
+            <button id="authorize-button" onclick="handleAuthClick(event)">
+                Authorize
+            </button>
+        </div>
+        <pre id="output"></pre>
+    </body>
+</html>

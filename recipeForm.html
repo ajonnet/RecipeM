@@ -1,0 +1,262 @@
+<div class="col-sm-6">
+	<br/>
+	<button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#recipeFormModal" data-backdrop="static" data-mode="Add">
+		Add
+	</button>
+	<button type="button" class="selectedRowHelperButtons btn btn-primary btn-sm" id='editRecipeBt' disabled>
+		Edit
+	</button>
+	<button type="button" class="selectedRowHelperButtons btn btn-primary btn-sm" id='deleteRecipeBt' disabled>
+		Delete
+	</button>
+	<br/><br/>
+
+	<p>List of Recipes</p>
+	<table id="ingredientsTable" class="table table-striped table-bordered" cellspacing="0" width="100%">
+		<thead>
+			<tr>
+				<th>Title</th>
+				<th>Photo</th>
+			</tr>
+		</thead>
+		<tfoot>
+			<tr>
+				<th>Title</th>
+				<th>Photo</th>
+			</tr>
+		</tfoot>
+	</table>
+</div>
+
+<!-- Modal Recipe Form-->
+<div class="modal fade" id="recipeFormModal" tabindex="-1" role="dialog" aria-labelledby="recipeFormLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+	<div class="modal-content">
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+				<span aria-hidden="true">&times;</span>
+			</button>
+			<h4 class="modal-title" id="recipeFormLabel">
+				<span id="addIngrTxt">Add Recipe</span>
+				<span id="editIngrTxt" hidden>Edit Recipe</span>
+			</h4>
+		</div>
+		<div class="modal-body">
+			<div class ="container-fluid">
+				<form class="form-horizontal" id="addRecipeForm" role="form">
+					<!-- Title -->
+					<div class="form-group row">
+						<label for="rTitle" class="control-label col-sm-2">Title</label>
+						<div class="col-sm-10">
+							<input type="text" class="form-control" id="rTitle" placeholder="Onion" required></input>
+						</div>
+					</div>
+
+					<!-- Image File-->
+					<div class="form-group row">
+						<label for="rRecipeRefPhoto" class="control-label col-sm-2">Refrence Photo</label>
+						<div class="col-sm-10">
+							<input type="file" class="form-control" id="rRecipeRefPhoto" required>
+							<span class="file-custom"></span>
+						</div>
+					</div>
+
+					<!-- Image File Preview Box-->
+					<div class="form-group row" id="imgPreviewBox" hidden>
+						<div class="col-sm-offset-2 col-sm-10">
+							<img id="imgElem" src="" class="img-thumbnail" alt="Recipe Img" width="304" height="236">
+						</div>
+					</div>
+
+
+					<!-- Veg/Non-Veg, Gluten-Free, Lactose Free, Vegan -->
+					<div class="form-group row">
+						<label for="rVegNonVegSel" class="control-label col-sm-2">Characteristics</label>
+
+						<div class="col-sm-10">
+
+							<div class = "col-sm-2">
+								<!-- Veg/Non-Veg -->
+								<select id="rVegNonVegSel" class="form-control">
+									<option>Veg</option>
+									<option>Non-Veg</option>
+								</select>
+							</div>
+
+							<div class = "col-sm-10">
+								&nbsp;&nbsp;
+								<!-- Gluten Free -->
+								<input class="form-control" type="checkbox"> Gluten Free</input>
+
+								&nbsp;&nbsp;
+								<!-- Lactose Free -->
+								<input class="form-control" type="checkbox"> Lactose Free</input>
+
+								&nbsp;&nbsp;
+								<!-- Vegan -->
+								<input class="form-control" type="checkbox"> Vegan</input>
+							</div>
+						</div>
+
+					</div>
+
+					<!-- Time to cook -->
+					<div class="form-group row">
+						<label for="rTTCook" class="control-label col-sm-2">Time to cook</label>
+						<div class = "col-sm-10 ">
+							<div class = "input-group">
+								<input type="text" class="form-control" id="rTTCook" placeholder="10"></input>
+								<span class="input-group-addon">min</span>
+							</div>
+						</div>
+					</div>
+
+					<!-- Serving Quantity -->
+					<div class="form-group row">
+						<label for="rServingQty" class="control-label col-sm-2">Serving Quantity</label>
+						<div class = "col-sm-10 ">
+							<div class = "input-group">
+								<input type="text" class="form-control" id="rServingQty" placeholder="4"></input>
+								<span class="input-group-addon">people</span>
+							</div>
+						</div>
+					</div>
+
+
+					<!-- Ingredients -->
+					<div class="form-group row">
+						<label for="rIngredients" class="control-label col-sm-2">Ingredients</label>
+						<div class = "col-sm-10">
+							<div class = "input-group">
+								<textarea class="form-control" id="rIngredients" placeholder="200gm Paneer"></textarea>
+							</div>
+						</div>
+					</div>
+
+					<!-- Cooking Steps -->
+					<div class="form-group row">
+						<label for="rSteps" class="control-label col-sm-2">CookingSteps</label>
+						<div class = "col-sm-10">
+							<div class = "input-group">
+								<textarea class="form-control" id="rSteps" placeholder="Dice the Panneer"></textarea>
+							</div>
+						</div>
+					</div>
+
+					<!--
+					<div class="form-group row">
+						<div class="col-sm-offset-2 col-sm-10">
+							<button type="submit" class="btn btn-primary">Add Ingredient</button>
+						</div>
+					</div>
+					-->
+				</form>
+			</div>
+		</div>
+		<div class="modal-footer">
+			<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+			<button id="recipeFormSaveBt" type="button" class="btn btn-primary">Save</button>
+		</div>
+	</div>
+  </div>
+</div>
+
+
+
+
+<!--
+
+<div class = "containter">
+	<form class="form-horizontal">
+		<!-- Title -->
+		<div class="form-group">
+			<label for="rTitle" class="control-label col-sm-2">Title</label>
+			<div class="col-sm-10"> <input type="text" class="form-control" id="rTitle" placeholder="Paneer Bhujiya"></input> </div>
+		</div>
+
+		<!-- Image -->
+		<div class="form-group">
+			<label for="rRecipeRefPhoto" class="control-label col-sm-2">Refrence Photo</label>
+			<div class="col-sm-10"> <input type="text" class="form-control" id="rRecipeRefPhoto" placeholder=""></input> </div>
+		</div>
+
+		<!-- Veg/Non-Veg, Gluten-Free, Lactose Free, Vegan -->
+		<div class="form-group">
+			<label for="rVegNonVegSel" class="control-label col-sm-2">Characteristics</label>
+
+			<div class="col-sm-10">
+
+				<div class = "col-sm-2">
+					<!-- Veg/Non-Veg -->
+					<select id="rVegNonVegSel" class="form-control">
+						<option>Veg</option>
+						<option>Non-Veg</option>
+					</select>
+				</div>
+
+				<div class = "col-sm-10">
+					&nbsp;&nbsp;
+					<!-- Gluten Free -->
+					<input type="checkbox"> Gluten Free</input>
+
+					&nbsp;&nbsp;
+					<!-- Lactose Free -->
+					<input type="checkbox"> Lactose Free</input>
+
+					&nbsp;&nbsp;
+					<!-- Vegan -->
+					<input type="checkbox"> Vegan</input>
+				</div>
+			</div>
+
+		</div>
+
+		<!-- Time to cook -->
+		<div class="form-group">
+			<label for="rTTCook" class="control-label col-sm-2">Time to cook</label>
+			<div class = "col-sm-10 ">
+				<div class = "input-group">
+					<input type="text" class="form-control" id="rTTCook" placeholder="10"></input>
+					<span class="input-group-addon">min</span>
+				</div>
+			</div>
+		</div>
+
+
+		<!-- Serving Quantity -->
+		<div class="form-group">
+			<label for="rServingQty" class="control-label col-sm-2">Serving Quantity</label>
+			<div class = "col-sm-10 ">
+				<div class = "input-group">
+					<input type="text" class="form-control" id="rServingQty" placeholder="4"></input>
+					<span class="input-group-addon">people</span>
+				</div>
+			</div>
+		</div>
+
+		<!-- Ingredients -->
+		<div class="form-group">
+			<label for="rIngredients" class="control-label col-sm-2">Ingredients</label>
+			<div class = "col-sm-10">
+				<div class = "input-group">
+					<textarea class="form-control" id="rIngredients" placeholder="200gm Paneer"></textarea>
+				</div>
+			</div>
+		</div>
+
+		<!-- Cooking Steps -->
+		<div class="form-group">
+			<label for="rSteps" class="control-label col-sm-2">CookingSteps</label>
+			<div class = "col-sm-10">
+				<div class = "input-group">
+					<textarea class="form-control" id="rSteps" placeholder="Dice the Panneer"></textarea>
+				</div>
+			</div>
+		</div>
+
+		<div class="col-sm-offset-2 col-sm-10">
+			<button type="submit" class="btn btn-primary">Add Recipe</button>
+		</div>
+	</form>
+</div>
+-->

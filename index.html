@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Dashboard</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <!-- Bootstrap -->
+            <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+            <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css">
+
+            <link rel="stylesheet" href="jqueryui/jquery-ui.css">
+            <link rel="stylesheet" href="primeui/production/primeui-2.2-min.css">
+            <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+            <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+            <script src="http://www.parsecdn.com/js/parse-1.6.7.min.js"></script>
+            <script type="text/javascript" src="jqueryui/jquery-ui.js"></script>
+            <script type="text/javascript" src="primeui/production/primeui-2.2-min.js"></script>
+
+            <script>
+                Parse.initialize("rfIsAJZM19Dh1kOv8eYnHizu8MjrjA6wrFrJOlvn", "fcfoBG221xYTkUXsSYhqNa3MnT2nSItyp1NiWAaM");
+                var IngredientClass = Parse.Object.extend("Ingredient");
+            </script>
+
+
+    </head>
+    <body>
+        <h2>Dashboard</h2>
+        <br>
+
+        <div class = "containter">
+
+            <input type='file' accept='image/*' onchange='openFile(event)'><br>
+            <img id='output'>
+
+
+            <div id="messages"></div>
+
+            <div id="tbllocal"></div>
+
+            <ul id="cm">
+                <li><a data-icon="fa-search" onclick="ContextMenu.view()">View</a></li>
+                <li><a data-icon="fa-edit" onclick="ContextMenu.view()">Edit</a></li>
+                <li><a data-icon="fa-close" onclick="ContextMenu.remove()">Delete</a></li>
+            </ul>
+        </div>
+
+    </body>
+
+    <script>
+        var openFile = function(event) {
+            var input = event.target;
+
+            var reader = new FileReader();
+            reader.onload = function(){
+                var dataURL = reader.result;
+                var output = document.getElementById('output');
+                output.src = dataURL;
+            };
+            reader.readAsDataURL(input.files[0]);
+        };
+    </script>
+
+    <script type="text/javascript">
+        $(function() {
+
+          $('#tbllocal').puidatatable({
+                                            caption: 'Ingredients',
+                                      responsive:true,
+                                      selectionMode:'single',
+                                      editMode:'cell',
+                                            columns: [
+                                                      {field: 'title', headerText: 'Title', editor:'input',filter:true},
+                                                      {field: 'category', headerText: 'Category',filter:true},
+                                                      {field: 'imageFName', headerText: 'Image'}
+
+                                                      ],
+                                      cellEdit:function(event,ui) {
+
+
+                                      if(ui.field == "title") {
+                                      ui.data.obj.set("Title",ui.newValue);
+                                      }
+
+                                      ui.data.obj.save(null, {
+                                                       success:function() {
+                                                       $('#messages').puigrowl('show', [{severity: 'info', summary: 'Cell Edit', detail: 'Object updated successfully'}]);
+                                                       }
+
+                                                       });
+
+
+                                      },
+                                            datasource: function(callback) {
+
+                                      refthis = this;
+                                      var query = new Parse.Query(IngredientClass);
+
+                                      query.find({
+                                                 success:function(results) {
+
+
+                                                 jsonObj = [];
+
+                                                 for (var i = 0; i < results.length; i++) {
+
+                                                  item = {};
+                                                  item["title"] = results[i].get("Title");
+                                                  item["category"] = results[i].get("Category");
+                                                  item["imageFName"] = results[i].get("RefImageName");
+
+                                                   item["obj"] = results[i];
+                                                  jsonObj.push(item);
+                                                 }
+
+                                                 callback.call(refthis,jsonObj);
+
+                                                 },
+
+
+                                                 error:function(error) {
+                                                 alert("Error: " + error.code + " " + error.message);
+
+                                                 }
+
+                                                 });
+
+
+
+                                                }
+                                            });
+
+          $('#cm').puicontextmenu({
+                                  target: $('#tbllocal')
+                                  });
+          });
+
+          $('#messages').puigrowl();
+
+
+
+          window.ContextMenu = {
+
+              view: function() {
+                  var data = $('#tbllocal').puidatatable('getContextMenuSelection');
+                  $('#messages').puigrowl('show', [{severity: 'info', summary: 'Row Selected', detail: (data.title + ' ' + data.category + ' ' + data.obj.id)}]);
+              },
+
+              remove: function() {
+                  var data = $('#tbllocal').puidatatable('getContextMenuSelection');
+                  var ingObj = data.obj;
+                  ingObj.destroy({
+                                   success: function(myObject) {
+                                   // The object was deleted from the Parse Cloud.
+                                   $('#messages').puigrowl('show', [{severity: 'info', summary: 'Row Deleted', detail: "Object deleted: " + myObject.title}]);
+
+                                 $('#tbllocal').puidatatable('reset');
+                                   },
+                                   error: function(myObject, error) {
+                                   // The delete failed.
+                                   // error is a Parse.Error with an error code and message.
+                                   $('#messages').puigrowl('show', [{severity: 'info', summary: 'Delete failed', detail: "Error: " + error}]);
+                                   }
+                                });
+              }
+          };
+        </script>
+</html>
