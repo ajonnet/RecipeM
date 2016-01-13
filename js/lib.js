@@ -1,4 +1,4 @@
-var PRODUCTION_MODE = false;
+var PRODUCTION_MODE = true;
 /**
  * The Project ID of your Google Cloud Storage Project.
  */
