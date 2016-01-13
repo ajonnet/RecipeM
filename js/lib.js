@@ -1,3 +1,4 @@
+var PRODUCTION_MODE = true;
 /**
  * The Project ID of your Google Cloud Storage Project.
  */
@@ -37,9 +38,18 @@ var API_VERSION = 'v1';
  * bucket naming can be found here:
  * https://developers.google.com/storage/docs/bucketnaming
  */
-var BUCKET = 'img_res_dev';
+var BUCKET_PROD = 'img_res';
+var BUCKET_DEV = 'img_res_dev';
+var BUCKET = (PRODUCTION_MODE)?BUCKET_PROD:BUCKET_DEV;
+var IMG_URL_PREFIX = "http://storage.googleapis.com/" + BUCKET + "/";
 
-var IMG_URL_PREFIX = "http://storage.googleapis.com/" + BUCKET + "/"
+//Parse Authorizatoin token
+var Parse_APP_ID_PROD = "rfIsAJZM19Dh1kOv8eYnHizu8MjrjA6wrFrJOlvn";
+var Parse_JS_KEY_PROD = "fcfoBG221xYTkUXsSYhqNa3MnT2nSItyp1NiWAaM";
+var Parse_APP_ID_DEV = "CSbJ6ufYjWfpzWJThXInqJ0cxJ0m3eFnBH4YVqOX";
+var Parse_JS_KEY_DEV = "91M9yRcIH3Lftz9PuiTepioKTwnfhYjnNg2B8pIU";
+var Parse_APP_ID = (PRODUCTION_MODE)?Parse_APP_ID_PROD:Parse_APP_ID_DEV;
+var Parse_JS_KEY = (PRODUCTION_MODE)?Parse_JS_KEY_PROD:Parse_JS_KEY_DEV;
 
 
 function insertObject(fileData) {
