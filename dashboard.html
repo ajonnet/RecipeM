@@ -20,6 +20,10 @@
     </head>
     <body>
 
+    <div id="DevModeWarning" class="alert alert-warning" role="alert">
+        Development Mode. <a href="http://recipemapp.parseapp.com/" class="alert-link">Switch to Production Mode</a>
+    </div>
+
     <h2>&nbsp;Dashboard</h2>
 
 
@@ -497,6 +501,10 @@
 
 			//Google API Initialization
 			window.setTimeout(function(){handleClientLoad();}, 1000);
+
+            if(PRODUCTION_MODE){
+                $("#DevModeWarning").hide();
+            }
 
 			//Initialize ingredients table
 			initializeIngredientsTable();
