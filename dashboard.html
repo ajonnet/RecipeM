@@ -474,6 +474,25 @@
 				//Ingredients
 				modal.find("#rIngredients").val(item["Ingredients"]);
 
+                //Associate Ingredients
+                if(asscIngrsSelMS) {
+                    var itemsToBeSelected = [];
+                    var recipeObj = item['RecipeObject'];
+                    var associatedIngredints = recipeObj.get('AsscIngredients');
+                    var msItems = asscIngrsSelMS.getData();
+                    for(var i =0; i < associatedIngredints.length; i++) {
+                        var ingrObjId_1 = associatedIngredints[i].id;
+
+                        for(var j=0; j<msItems.length; j++) {
+                            var ingrObjId_2 = msItems[j]['ParseIngredientObject'].id;
+                            if(ingrObjId_1 === ingrObjId_2) {
+                                itemsToBeSelected.push(msItems[j]);
+                            }
+                        }
+                    }
+                    asscIngrsSelMS.setSelection(itemsToBeSelected);
+                }
+
 				modal.data("editMode",true);
 				modal.data("RecipeObject",item['RecipeObject']);
     		}else {
@@ -506,6 +525,9 @@
 				modal.find("#rSteps").val("");
 				//Ingredients
 				modal.find("#rIngredients").val("");
+
+                //Associated Ingredients
+                if(asscIngrsSelMS) asscIngrsSelMS.clear();
 
 				modal.data("editMode",false);
 				modal.removeData("RecipeObject");
@@ -744,6 +766,7 @@
 		function initializeIngredientsTable() {
 			var query = new Parse.Query(IngredientClass);
 			query.select('Title','RefImageName','Category');
+            query.limit(1000);
 			query.find().then(function(results){
 				//console.log("Fetch query success with objects count: " + results.length);
 				updateIngrediantTableForObjects(results);
@@ -753,7 +776,8 @@
 
 		function initializeRecipesTable(){
 			var query = new Parse.Query(RecipeClass);
-			query.select('Title','RefImageName','StepsToCook','Ingredients','ServingQty','TimeToCook','Veg','LactoseFree','GlutenFree','Vegan');
+            query.select('Title','RefImageName','StepsToCook','Ingredients','ServingQty','TimeToCook','Veg','LactoseFree','GlutenFree','Vegan','AsscIngredients');
+            query.limit(1000);
 			query.find().then(function(results){
 				//console.log("Fetch query success with objects count: " + results.length);
 				updateRecipeTableForObjects(results);
@@ -1026,20 +1050,20 @@
 				}
 
 				//Update the related Image object
-				//Uses the info from parseObjectData to upload the image selected in form modal
-				var updateImageObject = function(parseObjdata,formModal, callback) {
+				//Upload the image selected in form modal with the provided name
+				var updateImageObject = function(imageName,formModal, callback) {
 					//Upload Image if required
-					if(parseObjdata.RefImageName && (parseObjdata.RefImageName.length>0) ) { //New Image selected
+					if(imageName && (imageName.length>0) ) { //New Image selected
 						//Remove Previous Image
 						//TODO
 
 						var selectedfile = formModal.find('#rIngrRefPhoto')[0].files[0];
-						insertObject(selectedfile,parseObjdata.RefImageName,function(resp){
+						insertObject(selectedfile,imageName,function(resp){
 							//Failure Handling TODO
 
 							callback();
 						});
-					}else if(parseObjdata.RefImageName && (parseObjdata.RefImageName.length === 0)){ //Image Removed
+					}else if(imageName && (imageName.length === 0)){ //Image Removed
 						//Remove Image
 						//Remove functionality not implemented yet
 						//TODO
@@ -1057,7 +1081,7 @@
 				var ingrFormModal = $("#ingredientFormModal");
 				isEditMode = ingrFormModal.data("editMode");
 				var dataForParseObject = generateDataForParseObjectFromIngrForm(ingrFormModal);
-				updateImageObject(dataForParseObject,ingrFormModal,function(error){
+				updateImageObject(dataForParseObject.RefImageName,ingrFormModal,function(error){
 
 					if(!error){ //Success, image updated
 
@@ -1129,7 +1153,7 @@
 
 				//Fetches values from the form and generates the data Object
 				//works for both edit and add mode
-				var generateDataForParseObjectFromIngrForm = function(formModal){
+				var generateDataForParseObjectFromRecipeForm = function(formModal){
 					var data = {};
 
 					//RefImageName
@@ -1155,24 +1179,39 @@
 					data.GlutenFree = formModal.find("#rIsVeganFree").prop('checked');
 					data.Vegan = formModal.find("#rIsVegan").prop('checked');
 
+                    //Associate Ingredients Item
+                    var asscIngrs = [];
+                    var selIngrItems = asscIngrsSelMS.getSelection();
+                    var msDataItems = asscIngrsSelMS.getData();
+                    for(var i=0; i < selIngrItems.length; i++) {
+                        for(var j=0; j < msDataItems.length; j++) {
+                            if(msDataItems[j].id === selIngrItems[i].id) {
+                                var ingrParseObj = msDataItems[j]['ParseIngredientObject'];
+                                asscIngrs.push(ingrParseObj);
+                            }
+                        }
+                    }
+                    data.AsscIngredients = asscIngrs;
+
+
 					return data;
 				}
 
 				//Update the related Image object
-				//Uses the info from parseObjectData to upload the image selected in form modal
-				var updateImageObject = function(parseObjdata,formModal, callback) {
+				//Upload the image selected in form modal with the provided name
+				var updateImageObject = function(imageName,formModal, callback) {
 					//Upload Image if required
-					if(parseObjdata.RefImageName && (parseObjdata.RefImageName.length>0) ) { //New Image selected
+					if(imageName && (imageName.length>0) ) { //New Image selected
 						//Remove Previous Image
 						//TODO
 
 						var selectedfile = formModal.find('#rRecipeRefPhoto')[0].files[0];
-						insertObject(selectedfile,parseObjdata.RefImageName,function(resp){
+						insertObject(selectedfile,imageName,function(resp){
 							//Failure Handling TODO
 
 							callback();
 						});
-					}else if(parseObjdata.RefImageName && (parseObjdata.RefImageName.length === 0)){ //Image Removed
+					}else if(imageName && (imageName.length === 0)){ //Image Removed
 						//Remove Image
 						//Remove functionality not implemented yet
 						//TODO
@@ -1189,8 +1228,8 @@
 				//Execution, add/edit Ingredient item
 				var recipeFormModal = $("#recipeFormModal");
 				isEditMode = recipeFormModal.data("editMode");
-				var dataForParseObject = generateDataForParseObjectFromIngrForm(recipeFormModal);
-				updateImageObject(dataForParseObject,recipeFormModal,function(error){
+				var dataForParseObject = generateDataForParseObjectFromRecipeForm(recipeFormModal);
+				updateImageObject(dataForParseObject.RefImageName,recipeFormModal,function(error){
 
 					if(!error){ //Success, image updated
 
