@@ -147,7 +147,14 @@ function insertObject(fileData,fileName,callback) {
 										  });
 
 		request.execute(function(resp) {
-			callback(resp);
+            if(resp['mediaLink'] && (resp['mediaLink'].length > 0)) {
+                //Image uploaded succesfully
+                callback();
+            }else {
+                //There was some error uploading image
+                callback(resp);
+            }
+
 		});
 	}
 }
