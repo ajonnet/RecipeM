@@ -1131,10 +1131,13 @@
 						//TODO
 
 						var selectedfile = formModal.find('#rIngrRefPhoto')[0].files[0];
-						insertObject(selectedfile,imageName,function(resp){
-							//Failure Handling TODO
+						insertObject(selectedfile,imageName,function(error){
 
-							callback();
+                            if(!error) { //Success
+                                callback();
+                            }else {
+                                callback(error);
+                            }
 						});
 					}else if(imageName && (imageName.length === 0)){ //Image Removed
 						//Remove Image
@@ -1264,10 +1267,13 @@
 						//TODO
 
 						var selectedfile = formModal.find('#rRecipeRefPhoto')[0].files[0];
-						insertObject(selectedfile,imageName,function(resp){
-							//Failure Handling TODO
+						insertObject(selectedfile,imageName,function(error){
 
-							callback();
+                            if(!error) { //Success
+                                callback();
+                            }else {
+                                callback(error);
+                            }
 						});
 					}else if(imageName && (imageName.length === 0)){ //Image Removed
 						//Remove Image
