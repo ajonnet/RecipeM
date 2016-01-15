@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+		<!-- Required meta tags always come first -->
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+		<meta http-equiv="x-ua-compatible" content="ie=edge">
+
+		<title>Ingredients Preview </title>
+
+		<!-- Bootstrap -->
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+
+    </head>
+    <body>
+
+        <div id="DevModeWarning" class="alert alert-warning" role="alert">
+            Development Mode. <a href="http://recipemapp.parseapp.com/" class="alert-link">Switch to Production Mode</a>
+        </div>
+
+        <h2>&nbsp;Ingredients Preview</h2>
+        <div hidden>
+            <div id="child" class = "col-sm-2"><center><p>Name</p><img src="" class="img-thumbnail" alt="Ingredient Img" ></center></div>
+        </div>
+        <div id="parent" class = "col-sm-12">
+
+        </div>
+
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+        <script src="js/bootbox.min.js"></script>
+
+        <script type="text/javascript" src="js/lib.js"></script>
+
+        <script src="http://www.parsecdn.com/js/parse-1.6.7.min.js"></script>
+        <script src="https://apis.google.com/js/client.js"></script>
+    </body>
+
+    <script>
+        var IngredientClass = Parse.Object.extend("Ingredient");
+
+        function doReqInitialization() {
+			//Parse Initialization
+			Parse.initialize(Parse_APP_ID, Parse_JS_KEY);
+
+            if(PRODUCTION_MODE){
+                $("#DevModeWarning").hide();
+            }
+		}
+
+        $(document).ready(function() {
+
+            doReqInitialization();
+
+            var query = new Parse.Query(IngredientClass);
+			query.select('Title','RefImageName','Category');
+            query.limit(1000);
+			query.find().then(function(results){
+
+                for(var i =0; i< results.length; i++) {
+                    var child = $("#child").clone();
+                    $("#parent").append(child);
+
+                    var ingrObject = results[i];
+                    var title = ingrObject.get('Title');
+                    var RefImgName = ingrObject.get('RefImageName');
+                    var imgHtmlLink = IMG_URL_PREFIX + RefImgName;
+                    console.log(RefImgName);
+					child.find('.img-thumbnail').attr('src',imgHtmlLink);
+                    child.find("p").html(title);
+                }
+			});
+
+        });
+    </script>
+</html>
