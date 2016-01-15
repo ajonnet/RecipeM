@@ -17,6 +17,9 @@
 		<link rel="stylesheet" href="https://cdn.datatables.net/fixedheader/3.1.0/css/fixedHeader.bootstrap.min.css">
 		<link rel="stylesheet" href="https://cdn.datatables.net/colreorder/1.3.0/css/colReorder.bootstrap.min.css">
 		<link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.1.0/css/buttons.bootstrap.min.css">
+
+        <!-- MagicSuggest -->
+        <link rel="stylesheet" href="bower_components/magicsuggest/magicsuggest-min.css">
     </head>
     <body>
 
@@ -47,13 +50,16 @@
 				<div class="col-sm-6">
 					<br/>
 					<button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#ingredientFormModal" data-backdrop="static" data-mode="Add">
-		  				Add
+                        <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+		  				&nbsp;Add
 					</button>
 					<button type="button" class="selectedRowHelperButtons btn btn-primary btn-sm" id='editIngrBt' disabled>
-		  				Edit
+                        <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
+		  				&nbsp;Edit
 					</button>
 					<button type="button" class="selectedRowHelperButtons btn btn-primary btn-sm" id='deleteIngrBt' disabled>
-		  				Delete
+                        <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+		  				&nbsp;Delete
 					</button>
 					<br/><br/>
 
@@ -83,13 +89,16 @@
 				<div class="col-sm-10">
 					<br/>
 					<button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#recipeFormModal" data-backdrop="static" data-mode="Add">
-						Add
+                        <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+						&nbsp;Add
 					</button>
 					<button type="button" class="selectedRowHelperButtons btn btn-primary btn-sm" id='editRecipeBt' disabled>
-						Edit
+                        <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
+						&nbsp;Edit
 					</button>
 					<button type="button" class="selectedRowHelperButtons btn btn-primary btn-sm" id='deleteRecipeBt' disabled>
-						Delete
+                        <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+						&nbsp;Delete
 					</button>
 					<br/><br/>
 
@@ -307,11 +316,15 @@
 
 
 							<!-- Ingredients -->
-							<div class="form-group row">
+                            <div class="form-group row">
 								<label for="rIngredients" class="control-label col-sm-2">Ingredients</label>
-								<div class = "col-sm-10">
+								<div class = "col-sm-6">
 									<textarea class="form-control" id="rIngredients" placeholder="200gm Paneer"></textarea>
 								</div>
+								<div class = "col-sm-4">
+									<div class="form-control col-sm-12" id="asscIngrs"></div>
+								</div>
+
 							</div>
 
 							<!-- Cooking Steps -->
@@ -354,11 +367,15 @@
 		<script src="https://cdn.datatables.net/colreorder/1.3.0/js/dataTables.colReorder.min.js"></script>
 		<script src="https://cdn.datatables.net/fixedheader/3.1.0/js/dataTables.fixedHeader.min.js"></script>
 
+        <!--MagicSuggest-->
+        <script src="bower_components/magicsuggest/magicsuggest-min.js"></script>
+
     </body>
 
     <script>
     	var ingredientsTable;
     	var recipesTable;
+        var asscIngrsSelMS;
 
     	var IngredientClass = Parse.Object.extend("Ingredient");
     	var RecipeClass = Parse.Object.extend("Recipe");
@@ -412,7 +429,7 @@
     	}
 
     	//Updates the content of Recipe Form Modal
-    	function updateRecipeFormModalForItem(item,editMode) {
+    	function updateRecipeFormModalForItem(item,editMode,callback) {
 
     		var modal = $('#recipeFormModal');
 
@@ -457,8 +474,28 @@
 				//Ingredients
 				modal.find("#rIngredients").val(item["Ingredients"]);
 
-				modal.data("editMode",true);
-				modal.data("RecipeObject",item['RecipeObject']);
+                //Associate Ingredients
+                var recipeObj = item['RecipeObject'];
+                recipeObj.relation('RelatedIngredients').query().find({
+                    success: function(result) {
+
+                        var relatedIngrParseObjs = result;
+                        updateSelIngredientsItemsInRecipeFormForIngredientsParseObjects(relatedIngrParseObjs);
+
+                        //Associate data with form modal for later access
+                        modal.data("editMode",true);
+				        modal.data("RecipeObject",item['RecipeObject']);
+                        modal.data("RelatedIngredientObjects",relatedIngrParseObjs);
+
+                        if(callback) callback();
+
+                    },
+                    failure: function(error) {
+                        if(callback) callback(error);
+                    }
+                });
+
+
     		}else {
 
     			//Reset all fields
@@ -490,8 +527,12 @@
 				//Ingredients
 				modal.find("#rIngredients").val("");
 
+                //Associated Ingredients
+                if(asscIngrsSelMS) asscIngrsSelMS.clear();
+
 				modal.data("editMode",false);
 				modal.removeData("RecipeObject");
+                modal.removeData("RelatedIngredientObjects");
     		}
     	}
 
@@ -677,18 +718,68 @@
 			recipesTable = table;
 		}
 
+        //Function to initialize MultiSelect component for Ingredients in RecipeForm from Ingredients DataTable
+		function updateRecipeFormIngrMultiSelectComponentFromIngredientsTable() {
+
+            var tableData = ingredientsTable.data();
+
+			//Initialize data for MagicSuggest
+			var msData = [];
+			for(var i=0; i<tableData.length; i++) {
+				var parseObj = tableData[i]['IngredientObject'];
+
+				var title = parseObj.get('Title');
+				var category = parseObj.get('Category');
+				var objId = parseObj.get('id');
+
+				var rowData = {
+					'id' : i,
+					'objId' : objId,
+					'Title' : title,
+					'Category' : category,
+					'ParseIngredientObject' : parseObj
+				};
+
+				msData.push(rowData);
+			}
+
+			//Render MagicSuggest Component
+            if(!asscIngrsSelMS) {
+                asscIngrsSelMS = $('#asscIngrs').magicSuggest({
+                    allowFreeEntries : false,
+                    allowDuplicates : false,
+                    maxSelection : null,
+                    selectFirst : true,
+                    useTabKey: true,
+                    useZebraStyle: true,
+                    name : 'asscIngredients',   //Name to be used when submitting form
+                    //id : 'asscIngrsMS',         //Id to be used for the component
+                    placeholder : 'Choose Ingredients',
+                    data : msData,
+                    displayField : 'Title'
+			     });
+            }else {
+                asscIngrsSelMS.clear();
+                asscIngrsSelMS.setData(msData);
+            }
+
+		}
+
 		function initializeIngredientsTable() {
 			var query = new Parse.Query(IngredientClass);
 			query.select('Title','RefImageName','Category');
+            query.limit(1000);
 			query.find().then(function(results){
 				//console.log("Fetch query success with objects count: " + results.length);
 				updateIngrediantTableForObjects(results);
+                updateRecipeFormIngrMultiSelectComponentFromIngredientsTable();
 			});
 		}
 
 		function initializeRecipesTable(){
 			var query = new Parse.Query(RecipeClass);
-			query.select('Title','RefImageName','StepsToCook','Ingredients','ServingQty','TimeToCook','Veg','LactoseFree','GlutenFree','Vegan');
+            query.select('Title','RefImageName','StepsToCook','Ingredients','ServingQty','TimeToCook','Veg','LactoseFree','GlutenFree','Vegan','RelatedIngredients');
+            query.limit(1000);
 			query.find().then(function(results){
 				//console.log("Fetch query success with objects count: " + results.length);
 				updateRecipeTableForObjects(results);
@@ -709,6 +800,57 @@
 				imgPrevBox.attr('hidden',true);
 			}
 		}
+
+        //Funciton get selected items(as subset of original items) from a MagicSuggest Component
+        function getSelectedItemsFromMSComp(msComp){
+            //Fetching Selected items form MS Component as subset of dataItems
+            var selItemsFromData = [];
+            var selItems = msComp.getSelection();
+            var msDataItems = msComp.getData();
+            for(var i=0; i < selItems.length; i++) {
+                for(var j=0; j < msDataItems.length; j++) {
+                    if(msDataItems[j].id === selItems[i].id) {
+                        var obj = msDataItems[j];
+                        selItemsFromData.push(obj);
+                        break;
+                    }
+                }
+            }
+            return selItemsFromData;
+        }
+
+        //Gets an array of ParseIngredientObjects for selected ingredients in Recipe Form
+        function getSelectedIngredientsParseObjsFromRecipeForm() {
+
+            var msSelDataItems = getSelectedItemsFromMSComp(asscIngrsSelMS);
+            var selIngrParseObjs = [];
+            for(var i=0; i<msSelDataItems.length;i++) {
+                var parseIngrObj = msSelDataItems[i]['ParseIngredientObject'];
+                selIngrParseObjs.push(parseIngrObj);
+            }
+
+            return selIngrParseObjs;
+        }
+
+        //Update the selected Ingredients MagicSuggest component in Recipe Form for the provided Ingredient Parse Objects
+        function updateSelIngredientsItemsInRecipeFormForIngredientsParseObjects(ingrParseObjs) {
+            var msComp = asscIngrsSelMS;
+
+            var selMSDataItems = [];
+            var msDataItems = msComp.getData();
+            for(var i =0; i< ingrParseObjs.length; i++){
+                var targObjId = ingrParseObjs[i].id;
+                for(var j=0; j<msDataItems.length; j++) {
+                    var objId = msDataItems[j]['ParseIngredientObject'].id;
+                    if(targObjId === objId) {
+                        selMSDataItems.push(msDataItems[j]);
+                        break;
+                    }
+                }
+            }
+            msComp.setSelection(selMSDataItems);
+        }
+
 
 		$(document).ready(function() {
 
@@ -748,11 +890,28 @@
 				//Update the modal values
 				var op = recipesTable.rows({selected: true}).data();
 				var selectedItem = op[0];
-				updateRecipeFormModalForItem(selectedItem,true);
 
-				//Show the modal
-				var modal = $('#recipeFormModal');
-				modal.modal('show');
+                //Show Busy Dialog
+                $("#busyModal").modal('show');
+				updateRecipeFormModalForItem(selectedItem,true,function(error){
+                    //Hide Busy Dialog
+                    $("#busyModal").modal('hide');
+
+                    if(!error) { //Success
+
+                        //Show the modal
+                        var modal = $('#recipeFormModal');
+                        modal.modal('show');
+
+                    }else { //Failed
+
+                        console.log(error);
+
+                        //Show the error
+                        msg = "Failed to load the Recipe item";
+                        bootbox.alert(msg);
+                    }
+                });
 			});
 
 			//Delete Button Handling for Ingredient
@@ -798,6 +957,9 @@
 							deleteObjects(imgFileNames,function(errors){
 								//Update the Table
 								selectedRows.remove().draw();
+
+                                //Update MultiSelect Component for Table
+                                updateRecipeFormIngrMultiSelectComponentFromIngredientsTable();
 
 								finishHandler();
 
@@ -958,20 +1120,20 @@
 				}
 
 				//Update the related Image object
-				//Uses the info from parseObjectData to upload the image selected in form modal
-				var updateImageObject = function(parseObjdata,formModal, callback) {
+				//Upload the image selected in form modal with the provided name
+				var updateImageObject = function(imageName,formModal, callback) {
 					//Upload Image if required
-					if(parseObjdata.RefImageName && (parseObjdata.RefImageName.length>0) ) { //New Image selected
+					if(imageName && (imageName.length>0) ) { //New Image selected
 						//Remove Previous Image
 						//TODO
 
 						var selectedfile = formModal.find('#rIngrRefPhoto')[0].files[0];
-						insertObject(selectedfile,parseObjdata.RefImageName,function(resp){
+						insertObject(selectedfile,imageName,function(resp){
 							//Failure Handling TODO
 
 							callback();
 						});
-					}else if(parseObjdata.RefImageName && (parseObjdata.RefImageName.length === 0)){ //Image Removed
+					}else if(imageName && (imageName.length === 0)){ //Image Removed
 						//Remove Image
 						//Remove functionality not implemented yet
 						//TODO
@@ -989,7 +1151,7 @@
 				var ingrFormModal = $("#ingredientFormModal");
 				isEditMode = ingrFormModal.data("editMode");
 				var dataForParseObject = generateDataForParseObjectFromIngrForm(ingrFormModal);
-				updateImageObject(dataForParseObject,ingrFormModal,function(error){
+				updateImageObject(dataForParseObject.RefImageName,ingrFormModal,function(error){
 
 					if(!error){ //Success, image updated
 
@@ -1009,6 +1171,9 @@
 									//Add a new row to table
 									ingredientsTable.row.add(newRowData).draw();
 								}
+
+                                //Update MultiSelect Component for Table
+                                updateRecipeFormIngrMultiSelectComponentFromIngredientsTable();
 
 								finishHandler();
 							},
@@ -1058,7 +1223,7 @@
 
 				//Fetches values from the form and generates the data Object
 				//works for both edit and add mode
-				var generateDataForParseObjectFromIngrForm = function(formModal){
+				var generateDataForParseObjectFromRecipeForm = function(formModal){
 					var data = {};
 
 					//RefImageName
@@ -1088,20 +1253,20 @@
 				}
 
 				//Update the related Image object
-				//Uses the info from parseObjectData to upload the image selected in form modal
-				var updateImageObject = function(parseObjdata,formModal, callback) {
+				//Upload the image selected in form modal with the provided name
+				var updateImageObject = function(imageName,formModal, callback) {
 					//Upload Image if required
-					if(parseObjdata.RefImageName && (parseObjdata.RefImageName.length>0) ) { //New Image selected
+					if(imageName && (imageName.length>0) ) { //New Image selected
 						//Remove Previous Image
 						//TODO
 
 						var selectedfile = formModal.find('#rRecipeRefPhoto')[0].files[0];
-						insertObject(selectedfile,parseObjdata.RefImageName,function(resp){
+						insertObject(selectedfile,imageName,function(resp){
 							//Failure Handling TODO
 
 							callback();
 						});
-					}else if(parseObjdata.RefImageName && (parseObjdata.RefImageName.length === 0)){ //Image Removed
+					}else if(imageName && (imageName.length === 0)){ //Image Removed
 						//Remove Image
 						//Remove functionality not implemented yet
 						//TODO
@@ -1118,14 +1283,27 @@
 				//Execution, add/edit Ingredient item
 				var recipeFormModal = $("#recipeFormModal");
 				isEditMode = recipeFormModal.data("editMode");
-				var dataForParseObject = generateDataForParseObjectFromIngrForm(recipeFormModal);
-				updateImageObject(dataForParseObject,recipeFormModal,function(error){
+
+
+				var dataForParseObject = generateDataForParseObjectFromRecipeForm(recipeFormModal);
+				updateImageObject(dataForParseObject.RefImageName,recipeFormModal,function(error){
 
 					if(!error){ //Success, image updated
 
 						//Save Parse Object
 						var recipeParseObject = (isEditMode)? recipeFormModal.data("RecipeObject"):
 															(new RecipeClass());
+
+                        //Update set of related Ingredients
+                        var relRelatedIngredients = recipeParseObject.relation('RelatedIngredients');
+                        if(isEditMode){ //Remove old set of RelatedIngredient objects
+                            var prevRelatedIngredientObjs = recipeFormModal.data("RelatedIngredientObjects");
+                            relRelatedIngredients.remove(prevRelatedIngredientObjs);
+                        }
+                        //Add new set of Related Ingredients
+                        var newRelatedIngredientObjs = getSelectedIngredientsParseObjsFromRecipeForm();
+                        if(newRelatedIngredientObjs.length>0) relRelatedIngredients.add(newRelatedIngredientObjs);
+
 						recipeParseObject.save(dataForParseObject,{
 							success:function(){ //Parse object saved successfully
 
