@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+		<!-- Required meta tags always come first -->
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+		<meta http-equiv="x-ua-compatible" content="ie=edge">
+
+		<title>Version Info</title>
+
+		<!-- Bootstrap -->
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+
+    </head>
+    <body>
+
+        <div hidden>
+            <div class="panel panel-default" id="child"> <!--Panel-->
+                <div class="panel-heading"> <!--Panel heading-->
+                    <h4 class="panel-title"> Ver. 0.x.x</h4>
+                </div>
+
+                <div class="panel-body"> <!--Panel body-->
+                    <p>List of Changes</p>
+                    <ul>
+
+                    </ul>
+
+                </div>
+
+                <div class="panel-footer">Published: 18-Jan-2015, 06:20 PM</div> <!--Panel footer-->
+          </div>
+        </div>
+
+        <div class="panel-group" id="parent">
+
+        </div>
+
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+        <script src="js/bootbox.min.js"></script>
+
+    </body>
+
+    <script>
+        var versionData = [{
+                version: "0.4",
+                publishedDateStr : "18-Jan-2015, 06:20 PM",
+                changes: [
+                    "Added Support for multiple Categories in ingredient Form",
+                    "Recipe Form scrolling issue Fixed",
+                    "Version info tag added on Dashbaord"
+                ]
+            }];
+
+        $(document).ready(function() {
+
+            //Render version Data
+            for(var i=0; i<versionData.length;i++) {
+                var verInfo = versionData[i];
+                var child = $("#child").clone();
+
+                //Update child with verInfo
+                child.find(".panel-title").html("Ver. " + verInfo['version']);
+                child.find(".panel-footer").html("Published: " + verInfo['publishedDateStr']);
+                var list = child.find('.panel-body ul');
+                for(var j=0; j<verInfo['changes'].length; j++) {
+                    var changeDesc = verInfo['changes'][j];
+                    list.append($("<li>").text(changeDesc));
+                }
+
+                $("#parent").append(child);
+            }
+        });
+    </script>
+</html>
