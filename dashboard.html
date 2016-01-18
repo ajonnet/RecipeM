@@ -54,7 +54,7 @@
 
 
 
-				<div class="col-sm-6">
+				<div class="col-sm-8">
 					<br/>
 					<button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#ingredientFormModal" data-backdrop="static" data-mode="Add">
                         <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
@@ -77,6 +77,8 @@
 								<th>Title</th>
 								<th>Photo</th>
 								<th>Category</th>
+                                <th>Updated On</th>
+                                <th>Created On</th>
 							</tr>
 						</thead>
 						<tfoot>
@@ -84,6 +86,8 @@
 								<th>Title</th>
 								<th>Photo</th>
 								<th>Category</th>
+                                <th>Updated On</th>
+                                <th>Created On</th>
 							</tr>
 						</tfoot>
 					</table>
@@ -118,6 +122,8 @@
 								<th>Cook Time</th>
 								<th>Serving Qty</th>
 								<th>Is Veg</th>
+                                <th>Updated On</th>
+                                <th>Created On</th>
 							</tr>
 						</thead>
 						<tfoot>
@@ -127,6 +133,8 @@
 								<th>Cook Time</th>
 								<th>Serving Qty</th>
 								<th>Is Veg</th>
+                                <th>Updated On</th>
+                                <th>Created On</th>
 							</tr>
 						</tfoot>
 					</table>
@@ -352,6 +360,7 @@
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
 		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
 		<script src="js/bootbox.min.js"></script>
+        <script src="js/moment.min.js"></script>
 
 		<script type="text/javascript" src="js/lib.js"></script>
 
@@ -367,6 +376,7 @@
 		<script src="https://cdn.datatables.net/buttons/1.1.0/js/buttons.colVis.min.js"></script>
 		<script src="https://cdn.datatables.net/colreorder/1.3.0/js/dataTables.colReorder.min.js"></script>
 		<script src="https://cdn.datatables.net/fixedheader/3.1.0/js/dataTables.fixedHeader.min.js"></script>
+        <script src="https://cdn.datatables.net/plug-ins/1.10.10/sorting/datetime-moment.js"></script>
 
         <!--MagicSuggest-->
         <script src="bower_components/magicsuggest/magicsuggest-min.js"></script>
@@ -565,7 +575,9 @@
 			var title = parseObj.get('Title');
 			var refImageName = parseObj.get('RefImageName');
 			var categoryAr = parseObj.get('Category');
-			var objId = parseObj.get('id');
+			var objId = parseObj.id;
+            var updatedOn = moment(parseObj.updatedAt).format('hh:mm a, MM/DD/YYYY');
+            var createdOn = moment(parseObj.createdAt).format('hh:mm a, MM/DD/YYYY');
 
             var categoryStr = categoryAr.join(', ');
 
@@ -575,7 +587,9 @@
 				'RefImageName' : refImageName,
 				'CategoryStr' : categoryStr,
 				'IngredientObject' : parseObj,
-                'CategoryArr' : categoryAr
+                'CategoryArr' : categoryAr,
+                'LastUpdatedOn' : updatedOn,
+                'CreatedOn' : createdOn
 			};
 
 			return rowData;
@@ -593,7 +607,9 @@
 			var isLactoseFree = parseObj.get('LactoseFree');
 			var isGlutenFree = parseObj.get('GlutenFree');
 			var isVegan = parseObj.get('Vegan');
-			var objId = parseObj.get('id');
+			var objId = parseObj.id;
+            var updatedOn = moment(parseObj.updatedAt).format('hh:mm a, MM/DD/YYYY');
+            var createdOn = moment(parseObj.createdAt).format('hh:mm a, MM/DD/YYYY');
 
 			var rowData = {
 				'ObjId' : objId,
@@ -607,7 +623,9 @@
 				'IsLactoseFree' : isLactoseFree,
 				'IsGlutenFree' : isGlutenFree,
 				'IsVegan' : isVegan,
-				'RecipeObject' : parseObj
+				'RecipeObject' : parseObj,
+                'LastUpdatedOn' : updatedOn,
+                'CreatedOn' : createdOn
 			};
 
 			return rowData;
@@ -634,7 +652,9 @@
 				columns: [
 					{ data: 'Title' },
 					{ data: 'RefImageName' },
-					{ data: 'CategoryStr' }
+					{ data: 'CategoryStr' },
+                    { data: 'LastUpdatedOn'},
+                    { data: 'CreatedOn'},
 				]
 			});
 
@@ -692,7 +712,9 @@
 					{ data: 'RefImageName' },
 					{ data: 'TimeToCook' },
 					{ data: 'ServingQty' },
-					{ data: 'IsVeg' }
+					{ data: 'IsVeg' },
+                    { data: 'LastUpdatedOn'},
+                    { data: 'CreatedOn'},
 				]
 			});
 
