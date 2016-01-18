@@ -897,23 +897,27 @@
                 //Show Busy Dialog
                 $("#busyModal").modal('show');
 				updateRecipeFormModalForItem(selectedItem,true,function(error){
+
+                    //Sequence the showing of RecipeFormModal when busyModal got hidden
+                    $("#busyModal").one("hidden.bs.modal", function(e){
+                        if(!error) { //Success
+
+                            //Show the modal
+                            var modal = $('#recipeFormModal');
+                            modal.modal('show');
+
+                        }else { //Failed
+
+                            console.log(error);
+
+                            //Show the error
+                            msg = "Failed to load the Recipe item";
+                            bootbox.alert(msg);
+                        }
+                    });
+
                     //Hide Busy Dialog
                     $("#busyModal").modal('hide');
-
-                    if(!error) { //Success
-
-                        //Show the modal
-                        var modal = $('#recipeFormModal');
-                        modal.modal('show');
-
-                    }else { //Failed
-
-                        console.log(error);
-
-                        //Show the error
-                        msg = "Failed to load the Recipe item";
-                        bootbox.alert(msg);
-                    }
                 });
 			});
 
