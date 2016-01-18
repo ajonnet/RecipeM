@@ -195,22 +195,13 @@
 								</div>
 							</div>
 
-							<!-- Ingredient Category -->
+                            <!-- Ingredient Category -->
 							<div class="form-group row">
-								<label for="rCategory" class="control-label col-sm-2">Category</label>
-
-								<div class="col-sm-10">
-
-									<!-- Category -->
-									<select class="form-control" id="rCategory">
-										<option>Vegetable</option>
-										<option>Meat</option>
-										<option>Fruit</option>
-                                        <option>Lentins</option>
-                                        <option>Dairy</option>
-                                        <option>Fish</option>
-									</select>
-								</div>
+								<label for="rCategories" class="control-label col-sm-2">Category</label>
+                                <div class="col-sm-10">
+                                    <!-- Category -->
+                                    <div class="form-control col-sm-12" id="rCategories"></div>
+                                </div>
 							</div>
 
 							<!--
@@ -386,6 +377,7 @@
     	var ingredientsTable;
     	var recipesTable;
         var asscIngrsSelMS;
+        var categorySelMS;
 
     	var IngredientClass = Parse.Object.extend("Ingredient");
     	var RecipeClass = Parse.Object.extend("Recipe");
@@ -417,7 +409,7 @@
 				}
 
 				//Category
-				modal.find('#rCategory option').filter(function(i, e) { return $(e).text() == item["Category"]}).prop('selected',true);
+                updateSelectedCategoriesInIngredientFormForCatgories(item['CategoryArr']);
 
 				modal.data("editMode",true);
 				modal.data("IngredientObject",item['IngredientObject']);
@@ -431,7 +423,8 @@
 				imgPrevBox.attr('hidden',true);
 				imgPrevBox.find('.img-thumbnail').attr('src',"");
 
-				modal.find("#rCategory :nth(0)").prop("selected","selected"); //--Reset Category selection
+                //--Reset Category selection
+                if(categorySelMS) categorySelMS.clear();
 
 				modal.data("editMode",false);
 				modal.removeData("IngredientObject");
@@ -562,21 +555,27 @@
 
 			//Initialize Recipe table
 			initializeRecipesTable();
+
+            //Initialize Category MultiSelect option in Ingredient Form
+            initCategoryMultiSelectCompForIngredientForm();
 		}
 
 		//Generates TableRow data for a Ingredient ParseObject
 		function rowDataForIngrParseObject(parseObj) {
 			var title = parseObj.get('Title');
 			var refImageName = parseObj.get('RefImageName');
-			var category = parseObj.get('Category');
+			var categoryAr = parseObj.get('Category');
 			var objId = parseObj.get('id');
+
+            var categoryStr = categoryAr.join(', ');
 
 			var rowData = {
 				'ObjId' : objId,
 				'Title' : title,
 				'RefImageName' : refImageName,
-				'Category' : category,
-				'IngredientObject' : parseObj
+				'CategoryStr' : categoryStr,
+				'IngredientObject' : parseObj,
+                'CategoryArr' : categoryAr
 			};
 
 			return rowData;
@@ -635,7 +634,7 @@
 				columns: [
 					{ data: 'Title' },
 					{ data: 'RefImageName' },
-					{ data: 'Category' }
+					{ data: 'CategoryStr' }
 				]
 			});
 
@@ -727,6 +726,36 @@
 			//save the reference to table
 			recipesTable = table;
 		}
+
+        //Function to initialize MultiSelect component for Category in Ingredient Form
+        function initCategoryMultiSelectCompForIngredientForm(){
+            if(!categorySelMS){
+                var data = [
+                    {"id":0, "Title":"Vegetable"},
+                    {"id":1, "Title":"Meat"},
+                    {"id":2, "Title":"Fruit"},
+                    {"id":3, "Title":"Lentins"},
+                    {"id":4, "Title":"Dairy"},
+                    {"id":5, "Title":"Fish"}
+                            ];
+
+                categorySelMS = $('#rCategories').magicSuggest({
+                    allowFreeEntries : false,
+                    allowDuplicates : false,
+                    maxSelection : null,
+                    selectFirst : true,
+                    useTabKey: true,
+                    useZebraStyle: true,
+                    name : 'rCategories',   //Name to be used when submitting form
+                    //id : 'rCategories',         //Id to be used for the component
+                    placeholder : 'Choose Category',
+                    data : data,
+                    displayField : 'Title'
+                });
+            }
+
+
+        }
 
         //Function to initialize MultiSelect component for Ingredients in RecipeForm from Ingredients DataTable
 		function updateRecipeFormIngrMultiSelectComponentFromIngredientsTable() {
@@ -842,6 +871,18 @@
             return selIngrParseObjs;
         }
 
+        //Gets an array of Categories selected in Ingredient Form
+        function getSelectedCategoriesFromIngredientForm() {
+            var msSelDataItems = getSelectedItemsFromMSComp(categorySelMS);
+            var categoryArr = [];
+            for(var i=0; i<msSelDataItems.length;i++) {
+                var category = msSelDataItems[i]['Title'];
+                categoryArr.push(category);
+            }
+
+            return categoryArr;
+        }
+
         //Update the selected Ingredients MagicSuggest component in Recipe Form for the provided Ingredient Parse Objects
         function updateSelIngredientsItemsInRecipeFormForIngredientsParseObjects(ingrParseObjs) {
             var msComp = asscIngrsSelMS;
@@ -861,6 +902,23 @@
             msComp.setSelection(selMSDataItems);
         }
 
+        //Update the selection of items in Category in Ingredient form
+        function updateSelectedCategoriesInIngredientFormForCatgories(catgAr) {
+            var selMSDataItems = [];
+            var msDataItems = categorySelMS.getData();
+            for(var i =0; i< catgAr.length; i++) {
+                var catTitle = catgAr[i];
+                for(var j=0; j< msDataItems.length; j++) {
+                    var item = msDataItems[j];
+                    if(item['Title'] === catTitle) {
+                        selMSDataItems.push(item);
+                        break;
+                    }
+                }
+            }
+
+            categorySelMS.setSelection(selMSDataItems);
+        }
 
 		$(document).ready(function() {
 
@@ -1128,8 +1186,7 @@
 					}
 
 					data.Title = formModal.find("#rTitle").val();
-					data.Category = formModal.find("#rCategory option:selected").val();
-
+                    data.Category = getSelectedCategoriesFromIngredientForm();
 					return data;
 				}
 
