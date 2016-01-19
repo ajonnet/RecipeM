@@ -77,6 +77,7 @@
 								<th>Title</th>
 								<th>Photo</th>
 								<th>Category</th>
+                                <th>Remarks</th>
                                 <th>Updated On</th>
                                 <th>Created On</th>
 							</tr>
@@ -86,6 +87,7 @@
 								<th>Title</th>
 								<th>Photo</th>
 								<th>Category</th>
+                                <th>Remarks</th>
                                 <th>Updated On</th>
                                 <th>Created On</th>
 							</tr>
@@ -122,6 +124,7 @@
 								<th>Cook Time</th>
 								<th>Serving Qty</th>
 								<th>Is Veg</th>
+                                <th>Remarks</th>
                                 <th>Updated On</th>
                                 <th>Created On</th>
 							</tr>
@@ -133,6 +136,7 @@
 								<th>Cook Time</th>
 								<th>Serving Qty</th>
 								<th>Is Veg</th>
+                                <th>Remarks</th>
                                 <th>Updated On</th>
                                 <th>Created On</th>
 							</tr>
@@ -210,6 +214,14 @@
                                     <!-- Category -->
                                     <div class="form-control col-sm-12" id="rCategories"></div>
                                 </div>
+							</div>
+
+                            <!-- Remarks -->
+							<div class="form-group row">
+								<label for="rIngrRemarks" class="control-label col-sm-2">Remarks</label>
+								<div class="col-sm-10">
+									<input type="text" class="form-control" id="rIngrRemarks" placeholder="#Incomplete, #Done"></input>
+								</div>
 							</div>
 
 							<!--
@@ -344,6 +356,14 @@
 								</div>
 							</div>
 
+                            <!-- Remarks -->
+							<div class="form-group row">
+								<label for="rRecpRemarks" class="control-label col-sm-2">Remarks</label>
+								<div class="col-sm-10">
+									<input type="text" class="form-control" id="rRecpRemarks" placeholder="#Incomplete, #Done"></input>
+								</div>
+							</div>
+
 						</form>
 					</div>
 				</div>
@@ -418,6 +438,9 @@
 					imgPrevBox.find('.img-thumbnail').attr('src',"");
 				}
 
+                //Remarks
+                modal.find("#rIngrRemarks").val(item["Remarks"]);
+
 				//Category
                 updateSelectedCategoriesInIngredientFormForCatgories(item['CategoryArr']);
 
@@ -432,6 +455,9 @@
 				var imgPrevBox = modal.find('.imgPreviewBox[for=rIngrRefPhoto]');
 				imgPrevBox.attr('hidden',true);
 				imgPrevBox.find('.img-thumbnail').attr('src',"");
+
+                //Clear Remarks
+                modal.find("#rIngrRemarks").val("");
 
                 //--Reset Category selection
                 if(categorySelMS) categorySelMS.clear();
@@ -487,6 +513,9 @@
 				//Ingredients
 				modal.find("#rIngredients").val(item["Ingredients"]);
 
+                //Remarks
+                modal.find("#rRecpRemarks").val(item["Remarks"]);
+
                 //Associate Ingredients
                 var recipeObj = item['RecipeObject'];
                 recipeObj.relation('RelatedIngredients').query().find({
@@ -540,6 +569,9 @@
 				//Ingredients
 				modal.find("#rIngredients").val("");
 
+                //Clear Remarks
+                modal.find("#rRecpRemarks").val("");
+
                 //Associated Ingredients
                 if(asscIngrsSelMS) asscIngrsSelMS.clear();
 
@@ -578,6 +610,8 @@
 			var objId = parseObj.id;
             var updatedOn = moment(parseObj.updatedAt).format('hh:mm a, MM/DD/YYYY');
             var createdOn = moment(parseObj.createdAt).format('hh:mm a, MM/DD/YYYY');
+            var remarks = parseObj.get('Remarks');
+            remarks = (remarks)?remarks:"";
 
             var categoryStr = categoryAr.join(', ');
 
@@ -589,7 +623,8 @@
 				'IngredientObject' : parseObj,
                 'CategoryArr' : categoryAr,
                 'LastUpdatedOn' : updatedOn,
-                'CreatedOn' : createdOn
+                'CreatedOn' : createdOn,
+                'Remarks' : remarks
 			};
 
 			return rowData;
@@ -610,6 +645,8 @@
 			var objId = parseObj.id;
             var updatedOn = moment(parseObj.updatedAt).format('hh:mm a, MM/DD/YYYY');
             var createdOn = moment(parseObj.createdAt).format('hh:mm a, MM/DD/YYYY');
+            var remarks = parseObj.get('Remarks');
+            remarks = (remarks)?remarks:"";
 
 			var rowData = {
 				'ObjId' : objId,
@@ -625,7 +662,8 @@
 				'IsVegan' : isVegan,
 				'RecipeObject' : parseObj,
                 'LastUpdatedOn' : updatedOn,
-                'CreatedOn' : createdOn
+                'CreatedOn' : createdOn,
+                'Remarks' : remarks
 			};
 
 			return rowData;
@@ -653,6 +691,7 @@
 					{ data: 'Title' },
 					{ data: 'RefImageName' },
 					{ data: 'CategoryStr' },
+                    { data: 'Remarks'},
                     { data: 'LastUpdatedOn'},
                     { data: 'CreatedOn'},
 				]
@@ -713,6 +752,7 @@
 					{ data: 'TimeToCook' },
 					{ data: 'ServingQty' },
 					{ data: 'IsVeg' },
+                    { data: 'Remarks'},
                     { data: 'LastUpdatedOn'},
                     { data: 'CreatedOn'},
 				]
@@ -828,7 +868,7 @@
 
 		function initializeIngredientsTable() {
 			var query = new Parse.Query(IngredientClass);
-			query.select('Title','RefImageName','Category');
+			query.select('Title','RefImageName','Category','Remarks');
             query.limit(1000);
 			query.find().then(function(results){
 				//console.log("Fetch query success with objects count: " + results.length);
@@ -839,7 +879,7 @@
 
 		function initializeRecipesTable(){
 			var query = new Parse.Query(RecipeClass);
-            query.select('Title','RefImageName','StepsToCook','Ingredients','ServingQty','TimeToCook','Veg','LactoseFree','GlutenFree','Vegan','RelatedIngredients');
+            query.select('Title','RefImageName','StepsToCook','Ingredients','ServingQty','TimeToCook','Veg','LactoseFree','GlutenFree','Vegan','RelatedIngredients','Remarks');
             query.limit(1000);
 			query.find().then(function(results){
 				//console.log("Fetch query success with objects count: " + results.length);
@@ -1209,6 +1249,7 @@
 
 					data.Title = formModal.find("#rTitle").val();
                     data.Category = getSelectedCategoriesFromIngredientForm();
+                    data.Remarks = formModal.find("#rIngrRemarks").val();
 					return data;
 				}
 
@@ -1344,6 +1385,7 @@
 					data.LactoseFree = formModal.find("#rIsLactoseFree").prop('checked');
 					data.GlutenFree = formModal.find("#rIsVeganFree").prop('checked');
 					data.Vegan = formModal.find("#rIsVegan").prop('checked');
+                    data.Remarks = formModal.find("#rRecpRemarks").val();
 
 					return data;
 				}
