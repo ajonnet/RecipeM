@@ -686,6 +686,7 @@
 				select:{
 					style: 'os'
 				},
+                buttons: ['colvis'],
 				data:transData,
 				columns: [
 					{ data: 'Title' },
@@ -696,6 +697,10 @@
                     { data: 'CreatedOn'},
 				]
 			});
+
+            //Placement of buttons(Column Visibility) in table
+            $('.col-sm-6:eq(0) .dataTables_length', table.table().container()).append('<span>&nbsp;&nbsp;&nbsp;</span>');
+            table.buttons().container().appendTo($('.col-sm-6:eq(0) .dataTables_length', table.table().container()));
 
 			//Add selection event handler to table
 			table.on('select',function(e,dt,type,indexes){
@@ -745,6 +750,7 @@
 				select:{
 					style: 'os'
 				},
+                buttons: ['colvis'],
 				data:transData,
 				columns: [
 					{ data: 'Title' },
@@ -757,6 +763,10 @@
                     { data: 'CreatedOn'},
 				]
 			});
+
+            //Placement of buttons(Column Visibility) in table
+            $('.col-sm-6:eq(0) .dataTables_length', table.table().container()).append('<span>&nbsp;&nbsp;&nbsp;</span>');
+            table.buttons().container().appendTo($('.col-sm-6:eq(0) .dataTables_length', table.table().container()));
 
 			//Add selection event handler to table
 			table.on('select',function(e,dt,type,indexes){
