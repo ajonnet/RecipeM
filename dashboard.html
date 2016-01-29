@@ -1265,29 +1265,54 @@
 
 				//Update the related Image object
 				//Upload the image selected in form modal with the provided name
-				var updateImageObject = function(imageName,formModal, callback) {
+                //Removes the previous Image
+				var updateImageObject = function(oldImageName,imageName,formModal, callback) {
+
 					//Upload Image if required
 					if(imageName && (imageName.length>0) ) { //New Image selected
-						//Remove Previous Image
-						//TODO
+
 
 						var selectedfile = formModal.find('#rIngrRefPhoto')[0].files[0];
 						insertObject(selectedfile,imageName,function(error){
 
                             if(!error) { //Success
-                                callback();
+
+                                //Remove Previous Image
+                                if(oldImageName && (oldImageName.length>0)) {
+                                    deleteObject(oldImageName,function(error){
+                                        if(!error){ //Success
+                                            callback();
+                                        }else {
+                                            console.log("Error removing file from GCS: " + oldImageName);
+                                            callback(); //Throwing no error, as functionality should continue even though we failed to remove a image
+                                        }
+                                    });
+
+                                }else {
+                                    callback();
+                                }
+
                             }else {
                                 callback(error);
                             }
 						});
 					}else if(imageName && (imageName.length === 0)){ //Image Removed
-						//Remove Image
-						//Remove functionality not implemented yet
-						//TODO
-						console.log("Should not reach here");
+                        //Remove Previous Image
+                        if(oldImageName && (oldImageName.length>0)) {
+                            deleteObject(oldImageName,function(error){
+                                if(!error){ //Success
+                                    callback();
+                                }else {
+                                    console.log("Error removing file from GCS: " + oldImageName);
+                                    callback(); //Throwing no error, as functionality should continue even though we failed to remove a image
+                                }
+                            });
 
-						callback();
-					}else {
+                        }else {
+                            callback();
+                        }
+
+                    }else {
 
 						callback();
 					}
@@ -1297,14 +1322,15 @@
 				//Execution, add/edit Ingredient item
 				var ingrFormModal = $("#ingredientFormModal");
 				isEditMode = ingrFormModal.data("editMode");
-				var dataForParseObject = generateDataForParseObjectFromIngrForm(ingrFormModal);
-				updateImageObject(dataForParseObject.RefImageName,ingrFormModal,function(error){
+				//Save Parse Object
+                var ingrParseObject = (isEditMode)? ingrFormModal.data("IngredientObject"):
+                                                    (new IngredientClass());
+                var dataForParseObject = generateDataForParseObjectFromIngrForm(ingrFormModal);
+                var oldImgName = ingrParseObject.get("RefImageName");
+				updateImageObject(oldImgName,dataForParseObject.RefImageName,ingrFormModal,function(error){
 
 					if(!error){ //Success, image updated
 
-						//Save Parse Object
-						var ingrParseObject = (isEditMode)? ingrFormModal.data("IngredientObject"):
-															(new IngredientClass());
 						ingrParseObject.save(dataForParseObject,{
 							success:function(){ //Parse object saved successfully
 
@@ -1402,28 +1428,49 @@
 
 				//Update the related Image object
 				//Upload the image selected in form modal with the provided name
-				var updateImageObject = function(imageName,formModal, callback) {
+                //Remove previous image
+				var updateImageObject = function(oldImageName, imageName,formModal, callback) {
 					//Upload Image if required
 					if(imageName && (imageName.length>0) ) { //New Image selected
-						//Remove Previous Image
-						//TODO
 
-						var selectedfile = formModal.find('#rRecipeRefPhoto')[0].files[0];
+                        var selectedfile = formModal.find('#rRecipeRefPhoto')[0].files[0];
 						insertObject(selectedfile,imageName,function(error){
 
                             if(!error) { //Success
-                                callback();
+
+                                //Remove Previous Image
+                                if(oldImageName && (oldImageName.length>0)) {
+                                    deleteObject(oldImageName,function(error){
+                                        if(!error){ //Success
+                                            callback();
+                                        }else {
+                                            console.log("Error removing file from GCS: " + oldImageName);
+                                            callback(); //Throwing no error, as functionality should continue even though we failed to remove a image
+                                        }
+                                    });
+
+                                }else {
+                                    callback();
+                                }
                             }else {
                                 callback(error);
                             }
 						});
 					}else if(imageName && (imageName.length === 0)){ //Image Removed
-						//Remove Image
-						//Remove functionality not implemented yet
-						//TODO
-						console.log("Should not reach here");
 
-						callback();
+						//Remove Previous Image
+                        if(oldImageName && (oldImageName.length>0)) {
+                            deleteObject(oldImageName,function(error){
+                                if(!error){ //Success
+                                    callback();
+                                }else {
+                                    console.log("Error removing file from GCS: " + oldImageName);
+                                    callback(); //Throwing no error, as functionality should continue even though we failed to remove a image
+                                }
+                            });
+                        }else {
+                            callback();
+                        }
 					}else {
 
 						callback();
@@ -1434,22 +1481,23 @@
 				//Execution, add/edit Ingredient item
 				var recipeFormModal = $("#recipeFormModal");
 				isEditMode = recipeFormModal.data("editMode");
-
+                var recipeParseObject = (isEditMode)? recipeFormModal.data("RecipeObject"):
+															(new RecipeClass());
 
 				var dataForParseObject = generateDataForParseObjectFromRecipeForm(recipeFormModal);
-				updateImageObject(dataForParseObject.RefImageName,recipeFormModal,function(error){
+                var oldImgName = recipeParseObject.get("RefImageName");
+				updateImageObject(oldImgName,dataForParseObject.RefImageName,recipeFormModal,function(error){
 
 					if(!error){ //Success, image updated
 
 						//Save Parse Object
-						var recipeParseObject = (isEditMode)? recipeFormModal.data("RecipeObject"):
-															(new RecipeClass());
+
 
                         //Update set of related Ingredients
                         var relRelatedIngredients = recipeParseObject.relation('RelatedIngredients');
                         if(isEditMode){ //Remove old set of RelatedIngredient objects
                             var prevRelatedIngredientObjs = recipeFormModal.data("RelatedIngredientObjects");
-                            relRelatedIngredients.remove(prevRelatedIngredientObjs);
+                            if(prevRelatedIngredientObjs.length>0) relRelatedIngredients.remove(prevRelatedIngredientObjs);
                         }
                         //Add new set of Related Ingredients
                         var newRelatedIngredientObjs = getSelectedIngredientsParseObjsFromRecipeForm();
