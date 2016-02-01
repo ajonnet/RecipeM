@@ -939,7 +939,8 @@
 
 		function initializeIngredientsTable() {
 			var query = new Parse.Query(IngredientClass);
-			query.select('Title','RefImageName','Category','Remarks');
+			query.select('Title','RefImageName','Category','Remarks','User');
+            query.equalTo('User',currentUser);
             query.limit(1000);
 			query.find().then(function(results){
 				//console.log("Fetch query success with objects count: " + results.length);
@@ -950,7 +951,8 @@
 
 		function initializeRecipesTable(){
 			var query = new Parse.Query(RecipeClass);
-            query.select('Title','RefImageName','StepsToCook','Ingredients','ServingQty','TimeToCook','Veg','LactoseFree','GlutenFree','Vegan','RelatedIngredients','Remarks');
+            query.select('Title','RefImageName','StepsToCook','Ingredients','ServingQty','TimeToCook','Veg','LactoseFree','GlutenFree','Vegan','RelatedIngredients','Remarks','User');
+            query.equalTo('User',currentUser);
             query.limit(1000);
 			query.find().then(function(results){
 				//console.log("Fetch query success with objects count: " + results.length);
@@ -1060,7 +1062,6 @@
 			//Select the default Tab
 			$('#dashTabs a[href="#ingredients"]').tab('show');
 
-
 	  		//Update <Image> element for Ingredient Photo, when one is chosen
 			$("#rIngrRefPhoto").on("change",function(e){
 				handleImgPrevBoxForImgFileInputElem(this);
@@ -1070,7 +1071,6 @@
 			$("#rRecipeRefPhoto").on("change",function(e){
 				handleImgPrevBoxForImgFileInputElem(this);
 			});
-
 
 			//Edit Button Handling for Ingredient
 			$('#editIngrBt').on('click',function(event){
@@ -1321,6 +1321,10 @@
 					data.Title = formModal.find("#rTitle").val();
                     data.Category = getSelectedCategoriesFromIngredientForm();
                     data.Remarks = formModal.find("#rIngrRemarks").val();
+
+                    //Associate with current user
+                    data.User = currentUser;
+
 					return data;
 				}
 
@@ -1483,6 +1487,9 @@
 					data.GlutenFree = formModal.find("#rIsGlutenFree").prop('checked');
 					data.Vegan = formModal.find("#rIsVegan").prop('checked');
                     data.Remarks = formModal.find("#rRecpRemarks").val();
+
+                    //Associate with current user
+                    data.User = currentUser;
 
 					return data;
 				}
