@@ -1,4 +1,6 @@
-var PRODUCTION_MODE = true;
+var PRODUCTION_MODE = false;
+var CLIENT_VER = 0.7;
+
 /**
  * The Project ID of your Google Cloud Storage Project.
  */
@@ -146,7 +148,7 @@ function insertObject(fileData,fileName,callback) {
 										  'body': multipartRequestBody
 										  });
 
-		request.execute(function(resp) {
+		request.execute(function(resp,raw_resp) {
             if(resp['mediaLink'] && (resp['mediaLink'].length > 0)) {
                 //Image uploaded succesfully
                 callback();
@@ -178,8 +180,9 @@ function updateImgElemFromFile(imgElem,file){
 function handleClientLoad() {
 	bgAuthDone = false;
 	gapi.client.setApiKey(apiKey);
-	gapi.auth.init(doAuthorization(true));
+	//gapi.auth.init(doAuthorization(true));
 	initializeApi();
+    authSuccessHandle();
 }
 
 /**

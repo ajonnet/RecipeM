@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Login</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <!-- Bootstrap -->
+            <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+            <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css">
+    </head>
+    <body>
+        <div id="DevModeWarning" class="alert alert-warning" role="alert">
+            Development Mode. <a href="http://recipemapp.parseapp.com/" class="alert-link">Switch to Production Mode</a>
+        </div>
+
+        <h2>Login using Gmail account</h2>
+        <br>
+
+        <div class="col-sm-12">
+            <button class="btn btn-primary" onclick="loginBtClick()">Login</button>
+        </div>
+        
+        
+		<!-- Modal Busy Indicator-->
+		<div class="modal fade" id="busyModal" tabindex="-1" role="dialog" aria-labelledby="busyLabel" aria-hidden="true">
+		  <div class="modal-dialog modal-lg" role="document">
+			<div class="modal-content">
+			  <div class="modal-header">
+				<h4 class="modal-title" id="busyLabel">Processing...</h4>
+			  </div>
+			  <div class="modal-body">
+				<div class="progress">
+					<div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width:100%"></div>
+				</div>
+			  </div>
+			</div>
+		  </div>
+		</div>
+        
+        
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+        <script src="http://www.parsecdn.com/js/parse-1.6.7.min.js"></script>
+        <script src="https://apis.google.com/js/client.js"></script>
+        <script type="text/javascript" src="js/lib.js"></script>
+
+        <script src="js/bootbox.min.js"></script>
+
+    </body>
+
+    <script>
+        
+        function signUp(usrname,pass,emailId,callback) {
+            
+            var user = new Parse.User();
+            user.set("username",usrname);
+            user.set("password",pass);
+            user.set("email",emailId);
+            user.signUp(null,{
+                success: function(user) {
+                    callback(user);
+                },
+                error: function(user, error) {
+                    callback(user,error);
+                }
+            });
+        }
+        
+        //Dummy function, to be removed
+        function doSignup() {
+             $("#busyModal").modal('show');
+            signUp("ajonnet1","pass","ajonnet.testac@gmail.com",function(user,error) {
+                $("#busyModal").modal('hide');
+                if(!error) { //Success
+                    console.log("Singup Successfull");
+                    bootbox.alert("Singup Successfull. <br/> Email sent, for verfication.");
+                }else {
+                    // Show the error message somewhere and let the user try again.
+                    console.log("Error: " + error.code + " " + error.message);
+                    msg = "Failed to signUp." + "<br/>" + error.message;
+                    bootbox.alert(msg);
+                }
+                    
+            });
+        }
+        
+        //Dummy function to be removed
+        function doLogin() {
+                Parse.User.logIn("ajonnet","pass",{
+                success: function(user) {
+                    console.log("User Login successfull");   
+                },
+                error: function(user,error) {
+                    // Show the error message somewhere and let the user try again.
+                    console.log("Error: " + error.code + " " + error.message);
+                    msg = "Failed to Login." + "<br/>" + error.message;
+                    bootbox.alert(msg);
+                }
+            });   
+        }
+        
+        function doReqforResetPassword() {
+            Parse.User.requestPasswordReset("ajonnet@gmail.com",{
+
+                                                success:function() {
+                                                    msg = "Successfull!!<br/>Check your e-mail for further instruction.";
+                                                    console.log(msg);
+                                                    bootbox.alert(msg);
+                                                },
+                                                error:function(error) {
+                                                    // Show the error message somewhere and let the user try again.
+                                                    console.log("Error: " + error.code + " " + error.message);
+                                                    msg = "Reset Password request failed." + "<br/>" + error.message;
+                                                    bootbox.alert(msg);
+                                                }
+                                            });
+        }
+        
+    	function loginBtClick(){
+    		doReqforResetPassword();
+    	}
+        
+
+    	function authSuccessHandle(){
+    		console.log("Reached here");
+    		var url = "dashboard.html";
+    		var win = window.open(url, '_blank');
+    		//win.focus();
+    	}
+
+    	function authFailureHandle(){
+    		Alert("Login failed, try again.");
+    	}
+
+        $(document).ready(function() {
+
+            if(PRODUCTION_MODE){
+                $("#DevModeWarning").hide();
+            }
+            
+            //Parse Initialization
+			Parse.initialize(Parse_APP_ID, Parse_JS_KEY);
+        });
+    </script>
+</html>
