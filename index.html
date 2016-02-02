@@ -1,54 +1,359 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Login</title>
+        <title>RecipeM</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <!-- Bootstrap -->
             <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
             <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css">
-
-            <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-            <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
-
-			<script src="https://apis.google.com/js/client.js"></script>
-            <script type="text/javascript" src="js/lib.js"></script>
     </head>
     <body>
         <div id="DevModeWarning" class="alert alert-warning" role="alert">
             Development Mode. <a href="http://recipemapp.parseapp.com/" class="alert-link">Switch to Production Mode</a>
         </div>
 
-        <h2>Login using Gmail account</h2>
-        <br>
+        <div class="container">
+            <div id="loginbox" style="margin-top:50px;" class="mainbox col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">
+                <div class="panel panel-info" >
+                    <div class="panel-heading">
+                        <div class="panel-title">Sign In</div>
+                        <div style="float:right; font-size: 80%; position: relative; top:-10px"><a href="#" onclick="$('#loginbox').hide(); $('#forgotPassbox').show()">Forgot password?</a></div>
+                    </div>
 
-        <div class="col-sm-12">
-            <button class="btn btn-primary" onclick="loginBtClick()">Login</button>
+                    <div style="padding-top:30px" class="panel-body" >
+
+                        <div style="display:none" id="login-alert" class="alert alert-danger alert-dismissible col-sm-12">
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        </div>
+
+                        <form id="loginform" class="form-horizontal" role="form">
+
+                            <div style="margin-bottom: 25px" class="input-group">
+                                <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
+                                <input type="text" class="form-control" name="username" value="" placeholder="username or email" required>
+                            </div>
+
+                            <div style="margin-bottom: 25px" class="input-group">
+                                <span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
+                                <input type="password" class="form-control" name="password" placeholder="password" required>
+                            </div>
+
+                            <div style="margin-top:10px" class="form-group">
+                                <!-- Button -->
+                                <div class="col-sm-12 controls">
+                                    <button type="submit" class = "btn btn-success">Login</button>
+                                </div>
+                            </div>
+
+
+                            <div class="form-group">
+                                <div class="col-md-12 control">
+                                    <div style="border-top: 1px solid#888; padding-top:15px; font-size:85%" >
+                                        Don't have an account!
+                                    <a href="#" onClick="$('#loginbox').hide(); $('#signupbox').show()">
+                                        Sign Up Here
+                                    </a>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+            <div id="signupbox" style="display:none; margin-top:50px" class="mainbox col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">
+                <div class="panel panel-info">
+                    <div class="panel-heading">
+                        <div class="panel-title">Sign Up</div>
+                        <div style="float:right; font-size: 85%; position: relative; top:-10px"><a id="signinlink" href="#" onclick="$('#signupbox').hide(); $('#loginbox').show()">Sign In</a></div>
+                    </div>
+                    <div class="panel-body" >
+                        <form id="signupform" class="form-horizontal" role="form">
+
+                            <div id="signupalert" style="display:none" class="alert alert-danger">
+                                <p>Error:</p>
+                                <span></span>
+                            </div>
+                            <div class="form-group">
+                                <label for="Name" class="col-md-3 control-label">Name</label>
+                                <div class="col-md-9">
+                                    <input type="text" class="form-control" name="name" placeholder="John Mc." required>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="userId" class="col-md-3 control-label">UserId</label>
+                                <div class="col-md-9">
+                                    <input type="text" class="form-control" name="userId" placeholder="Username" required>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="email" class="col-md-3 control-label">Email-Id</label>
+                                <div class="col-md-9">
+                                    <input type="email" class="form-control" name="email" placeholder="Email Address" required>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="password" class="col-md-3 control-label">Password</label>
+                                <div class="col-md-9">
+                                    <input type="password" class="form-control" name="passwd" placeholder="Password" required>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="password" class="col-md-3 control-label"></label>
+                                <div class="col-md-9">
+                                    <input type="password" class="form-control" name="rpasswd" placeholder="Retype Password" required>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <!-- Button -->
+                                <div class="col-md-offset-3 col-md-9">
+                                    <button type="submit" class = "btn btn-success">Sign Up</button>
+                                </div>
+                            </div>
+                        </form>
+                     </div>
+                </div>
+             </div>
+            <div id="forgotPassbox" style="display:none; margin-top:50px;" class="mainbox col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">
+                <div class="panel panel-info" >
+                    <div class="panel-heading">
+                        <div class="panel-title">Forgot Password</div>
+                        <div style="float:right; font-size: 85%; position: relative; top:-10px"><a id="signinlink" href="#" onclick="$('#forgotPassbox').hide(); $('#loginbox').show()">Sign In</a></div>
+                    </div>
+
+                    <div style="padding-top:30px" class="panel-body" >
+
+                        <div style="display:none" id="forgotPass-alert" class="alert alert-danger col-sm-12"></div>
+
+                        <form id="forgotPassform" class="form-horizontal" role="form">
+
+                            <div class="form-group">
+                                <label for="email" class="col-md-3 control-label">Email-Id</label>
+                                <div class="col-md-9">
+                                    <input type="email" class="form-control" name="email" placeholder="Email Address">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+
+                                <div class="col-md-offset-3 col-md-9">
+                                    <button type="submit" class = "btn btn-success">Recover</button>
+                                </div>
+                            </div>
+
+                        </form>
+
+                    </div>
+                </div>
+            </div>
         </div>
+
+
+
+		<!-- Modal Busy Indicator-->
+		<div class="modal fade" id="busyModal" tabindex="-1" role="dialog" aria-labelledby="busyLabel" aria-hidden="true">
+		  <div class="modal-dialog modal-lg" role="document">
+			<div class="modal-content">
+			  <div class="modal-header">
+				<h4 class="modal-title" id="busyLabel">Processing...</h4>
+			  </div>
+			  <div class="modal-body">
+				<div class="progress">
+					<div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width:100%"></div>
+				</div>
+			  </div>
+			</div>
+		  </div>
+		</div>
+
+
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+        <script src="http://www.parsecdn.com/js/parse-1.6.7.min.js"></script>
+        <script type="text/javascript" src="js/lib.js"></script>
+
+        <script src="js/bootbox.min.js"></script>
 
     </body>
 
     <script>
-
-    	function loginBtClick(){
-    		handleClientLoad();
-    	}
-
-    	function authSuccessHandle(){
-    		console.log("Reached here");
-    		var url = "dashboard.html";
-    		var win = window.open(url, '_blank');
-    		//win.focus();
-    	}
-
-    	function authFailureHandle(){
-    		Alert("Login failed, try again.");
-    	}
 
         $(document).ready(function() {
 
             if(PRODUCTION_MODE){
                 $("#DevModeWarning").hide();
             }
+
+            //Parse Initialization
+			Parse.initialize(Parse_APP_ID, Parse_JS_KEY);
+
+            //If there is already a active user then redirect to dashboard Page
+            if(Parse.User.current()) {
+                moveToDashboard();
+            }
+
+            //Hook custom code for form submition
+            $("#loginform").submit(function(e){
+                e.preventDefault();
+                doLogin();
+            });
+            $("#signupform").submit(function(e){
+                e.preventDefault();
+                doSignup();
+            });
+            $("#forgotPassform").submit(function(e){
+                e.preventDefault();
+                doReqforResetPassword();
+            });
         });
+
+        //Login form submit Handler
+        function doLogin() {
+            //Extract data
+            var username = $("#loginform input[name=username]").val();
+            var password = $("#loginform input[name=password]").val();
+
+            //Validate Info
+            //TODO
+
+            //Do Login
+            $("#busyModal").modal('show');
+            Parse.User.logIn(username,password,{
+                success: function(user) {
+                    $("#busyModal").modal('hide');
+
+                    console.log("Login Successful");
+
+                    //Take user to dashboard
+                    moveToDashboard();
+
+                    //Resend Verfication Email R&D Required
+                    /*
+                    //Make sure user has verfied his email Id
+                    if(user.get('emailVerified') === true) {
+
+                        //Take user to dashboard
+                        moveToDashboard();
+
+                    //Email not verified
+                    }else {
+
+                        //Prompt user to verify his emaild Id
+                        bootbox.dialog({
+                          message: "Choose Resend to send the verfication mail again.",
+                          title: "Email verfication pending",
+                          buttons: {
+                            main: {
+                              label: "Resend",
+                              className: "btn-primary",
+                              callback: function() {
+                                  console.log("Resend Clicked");
+                                  user.setEmail(user.getEmail());
+                                  user.save();
+                                  Parse.User.logOut();
+                              }
+                            },
+                            success: {
+                              label: "Ok",
+                              className: "btn-default",
+                              callback: function() {
+                                  Parse.User.logOut();
+                              }
+                            }
+                          }
+                        });
+                    }*/
+
+                },
+                error: function(user,error) {
+                    $("#busyModal").modal('hide');
+
+                    // Show the error message somewhere and let the user try again.
+                    console.log("Error: " + error.code + " " + error.message);
+                    msg = "Failed to Login." + "<br/>" + error.message;
+                    bootbox.alert(msg);
+                }
+            });
+
+        }
+
+        //Singup form submit Handler
+        function doSignup() {
+            //Extract data
+            var userFullName = $("#signupform input[name=name]").val();
+            var userId = $("#signupform input[name=userId]").val();
+            var emailId = $("#signupform input[name=email]").val();
+            var password = $("#signupform input[name=passwd]").val();
+
+            //Validate Info
+            //TODO
+
+            //Do SignUP
+            var user = new Parse.User();
+            user.set("username",userId);
+            user.set("password",password);
+            user.set("email",emailId);
+            user.set("fullName",userFullName);
+            $("#busyModal").modal('show');
+            user.signUp(null,{
+                success: function(user) {
+                    $("#busyModal").modal('hide');
+
+                    console.log("Singup Successfull");
+                    bootbox.alert("Singup Successfull. <br/> Email sent, for verfication.",function(){
+
+                        //Take user to dashboard
+                        moveToDashboard();
+                    });
+
+                },
+                error: function(user, error) {
+                    $("#busyModal").modal('hide');
+
+                    // Show the error message somewhere and let the user try again.
+                    console.log("Error: " + error.code + " " + error.message);
+                    msg = "Failed to signUp." + "<br/>" + error.message;
+                    bootbox.alert(msg);
+                }
+            });
+        }
+
+        //Forgot password form submit Handler
+        function doReqforResetPassword() {
+
+            //Extract data
+            var emailId = $("#forgotPassform input[name=email]").val();
+
+            //Validate Info
+            //TODO
+
+            //Do Request for password reset
+            Parse.User.requestPasswordReset(emailId,{
+                success:function() {
+                    console.log("Request for password request successfully made.");
+                    msg = "Successfull!!<br/>Check your e-mail for further instruction.";
+                    bootbox.alert(msg);
+                },
+                error:function(error) {
+                    // Show the error message somewhere and let the user try again.
+                    console.log("Error: " + error.code + " " + error.message);
+                    msg = "Reset Password request failed." + "<br/>" + error.message;
+                    bootbox.alert(msg);
+                }
+            });
+        }
+
+        //This takes you to the dashboard page
+        function moveToDashboard() {
+            window.location="/dashboard.html";
+        }
+
     </script>
 </html>
