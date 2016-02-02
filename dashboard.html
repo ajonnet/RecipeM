@@ -30,7 +30,7 @@
         <div class="row">
             <div class = "col-sm-4">
                 <span class = "h2">&nbsp;Dashboard</span><span style="margin-left:10px;">
-                <a target="_blank" href="verInfo.html"><kbd>Ver. 0.6</kbd></a>
+                <a target="_blank" href="verInfo.html"><kbd>Ver. <span id="verInfo"></span></kbd></a>
                 &nbsp;[<span id=userId></span>]
                 </span>
             </div>
@@ -631,6 +631,9 @@
     	}
 
 		function doReqInitialization() {
+            //Update Versionf info
+            $("#verInfo").text(CLIENT_VER);
+
 			//Parse Initialization
 			Parse.initialize(Parse_APP_ID, Parse_JS_KEY);
 
