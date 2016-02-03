@@ -413,6 +413,7 @@
     	var recipesTable;
         var asscIngrsSelMS;
         var categorySelMS;
+        var otherIngredients;
 
         var currentUser;
 
@@ -896,12 +897,20 @@
         //Function to initialize MultiSelect component for Ingredients in RecipeForm from Ingredients DataTable
 		function updateRecipeFormIngrMultiSelectComponentFromIngredientsTable() {
 
+            //Gather all ingredients
+            var ingrColl = [];
             var tableData = ingredientsTable.data();
+            for(var i =0; i <tableData.length;i++) {
+                ingrColl.push(tableData[i]['IngredientObject']);
+            }
+            for(var i =0; i < otherIngredients.length; i++) {
+                ingrColl.push(otherIngredients[i]);
+            }
 
 			//Initialize data for MagicSuggest
 			var msData = [];
-			for(var i=0; i<tableData.length; i++) {
-				var parseObj = tableData[i]['IngredientObject'];
+			for(var i=0; i<ingrColl.length; i++) {
+				var parseObj = ingrColl[i];
 
 				var title = parseObj.get('Title');
 				var category = parseObj.get('Category');
@@ -941,13 +950,23 @@
 		}
 
 		function initializeIngredientsTable() {
+            otherIngredients = [];
 			var query = new Parse.Query(IngredientClass);
 			query.select('Title','RefImageName','Category','Remarks','User');
-            query.equalTo('User',currentUser);
+            //query.equalTo('User',currentUser);
             query.limit(1000);
 			query.find().then(function(results){
 				//console.log("Fetch query success with objects count: " + results.length);
-				updateIngrediantTableForObjects(results);
+                var currentUserIngr = [];
+                for(var i=0; i< results.length;i++) {
+                    var iIngr = results[i];
+                    if(iIngr.get('User').id === currentUser.id) {
+                        currentUserIngr.push(iIngr);
+                    }else {
+                        otherIngredients.push(iIngr);
+                    }
+                }
+				updateIngrediantTableForObjects(currentUserIngr);
                 updateRecipeFormIngrMultiSelectComponentFromIngredientsTable();
 			});
 		}
