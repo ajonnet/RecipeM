@@ -196,7 +196,13 @@
 
             //If there is already a active user then redirect to dashboard Page
             if(Parse.User.current()) {
-                moveToDashboard();
+                usr = Parse.User.current();
+                if (usr.get('emailVerified') === true) { //Email Verififed
+                    moveToDashboard();
+                    return;
+                } else { //Logout the user if email not verified
+                    Parse.User.logOut();
+                }
             }
 
             //Hook custom code for form submition
@@ -231,11 +237,7 @@
 
                     console.log("Login Successful");
 
-                    //Take user to dashboard
-                    moveToDashboard();
-
                     //Resend Verfication Email R&D Required
-                    /*
                     //Make sure user has verfied his email Id
                     if(user.get('emailVerified') === true) {
 
@@ -255,9 +257,14 @@
                               className: "btn-primary",
                               callback: function() {
                                   console.log("Resend Clicked");
-                                  user.setEmail(user.getEmail());
-                                  user.save();
-                                  Parse.User.logOut();
+                                  var oEmailID = user.getEmail();
+                                  user.setEmail("dummy@mail.com");
+                                  user.save().then(function(result) {
+                                      user.setEmail(oEmailID);
+                                        user.save();
+                                        Parse.User.logOut();
+                                      console.log("Process for resending verfication completed successfully");
+                                  });
                               }
                             },
                             success: {
@@ -269,7 +276,7 @@
                             }
                           }
                         });
-                    }*/
+                    }
 
                 },
                 error: function(user,error) {
