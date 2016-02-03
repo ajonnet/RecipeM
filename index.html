@@ -233,11 +233,9 @@
             $("#busyModal").modal('show');
             Parse.User.logIn(username,password,{
                 success: function(user) {
+                    console.log("Login Successful");
                     $("#busyModal").modal('hide');
 
-                    console.log("Login Successful");
-
-                    //Resend Verfication Email R&D Required
                     //Make sure user has verfied his email Id
                     if(user.get('emailVerified') === true) {
 
@@ -257,13 +255,19 @@
                               className: "btn-primary",
                               callback: function() {
                                   console.log("Resend Clicked");
+                                  $("#busyModal").modal('show');
+
+                                  //Force Resend Verification mail
                                   var oEmailID = user.getEmail();
                                   user.setEmail("dummy@mail.com");
                                   user.save().then(function(result) {
                                       user.setEmail(oEmailID);
-                                        user.save();
-                                        Parse.User.logOut();
-                                      console.log("Process for resending verfication completed successfully");
+                                        user.save().then(function(result){
+                                            $("#busyModal").modal('hide');
+                                            Parse.User.logOut();
+                                            console.log("Process for resending verfication completed successfully");
+                                            bootbox.alert("Verfication mail sent.");
+                                        });
                                   });
                               }
                             },
