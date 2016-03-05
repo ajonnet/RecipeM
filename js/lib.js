@@ -1,5 +1,5 @@
 var PRODUCTION_MODE = true;
-var CLIENT_VER = 0.8;
+var CLIENT_VER = 0.9;
 
 /**
  * The Project ID of your Google Cloud Storage Project.
