@@ -1082,6 +1082,7 @@
 
 			doReqInitialization();
 
+
             //Auto resizing of TextAreas under RecipeFormModal
             autosize($('#rSteps,#rIngredients'));
             $('#recipeFormModal').on("shown.bs.modal",function(e){
@@ -1324,7 +1325,7 @@
 						var msgUpdateFailed = "Failed to update Ingredient, please try again.";
 						var msgAddFailed = "Failed to add Ingredient, please try again.";
 						msg = (isEditMode)?msgUpdateFailed:msgAddFailed;
-						console.log(error);
+						console.log(err);
 					}
 					bootbox.alert(msg);
 				};
@@ -1360,40 +1361,54 @@
 				//Update the related Image object
 				//Upload the image selected in form modal with the provided name
                 //Removes the previous Image
-				var updateImageObject = function(oldImageName,imageName,formModal, callback) {
-
+				var updateImageObject = function(oldImageName, imageName,formModal, callback) {
 					//Upload Image if required
 					if(imageName && (imageName.length>0) ) { //New Image selected
 
+                        var selectedfile = formModal.find('#rIngrRefPhoto')[0].files[0];
 
-						var selectedfile = formModal.find('#rIngrRefPhoto')[0].files[0];
-						insertObject(selectedfile,imageName,function(error){
+                        //Generate SM(small) version of image
+                        resizeImage(selectedfile,148,148,function(smImgData){
 
-                            if(!error) { //Success
+                            var filesData = [selectedfile,smImgData];
+                            var fileNames = [imageName,"SM_" + imageName];
 
-                                //Remove Previous Image
-                                if(oldImageName && (oldImageName.length>0)) {
-                                    deleteObject(oldImageName,function(error){
-                                        if(!error){ //Success
-                                            callback();
-                                        }else {
-                                            console.log("Error removing file from GCS: " + oldImageName);
-                                            callback(); //Throwing no error, as functionality should continue even though we failed to remove a image
-                                        }
-                                    });
+                            //Insert selected Image and SM version of selected Image
+                            insertObjects(filesData,fileNames,function(errors){
+                                if(!errors) { //Success
 
+                                    //Remove Previous Image
+                                    if(oldImageName && (oldImageName.length>0)) {
+                                        var smImageName = "SM_" + oldImageName;
+                                        var imgNames = [oldImageName,smImageName];
+                                        deleteObjects(imgNames,function(errors){
+                                            if(!errors){ //Success
+                                                callback();
+                                            }else {
+                                                console.log("Error removing file from GCS: " + oldImageName);
+                                                console.log("Error: " + errors);
+                                                callback(); //Throwing no error, as functionality should continue even though we failed to remove a image
+                                            }
+                                        });
+
+                                    }else {
+                                        callback();
+                                    }
                                 }else {
-                                    callback();
+                                    console.log("Failed to upload image");
+                                    console.log("Errors: " + errors);
+                                    callback(errors[0]);
                                 }
+                            });
+                        });
 
-                            }else {
-                                callback(error);
-                            }
-						});
 					}else if(imageName && (imageName.length === 0)){ //Image Removed
-                        //Remove Previous Image
+
+						//Remove Previous Image
                         if(oldImageName && (oldImageName.length>0)) {
-                            deleteObject(oldImageName,function(error){
+                            var smImageName = "SM_" + oldImageName;
+                            var imgNames = [oldImageName,smImageName];
+                            deleteObjects(imgNames,function(error){
                                 if(!error){ //Success
                                     callback();
                                 }else {
@@ -1401,12 +1416,10 @@
                                     callback(); //Throwing no error, as functionality should continue even though we failed to remove a image
                                 }
                             });
-
                         }else {
                             callback();
                         }
-
-                    }else {
+					}else {
 
 						callback();
 					}
@@ -1531,33 +1544,49 @@
 					if(imageName && (imageName.length>0) ) { //New Image selected
 
                         var selectedfile = formModal.find('#rRecipeRefPhoto')[0].files[0];
-						insertObject(selectedfile,imageName,function(error){
 
-                            if(!error) { //Success
+                        //Generate SM(small) version of image
+                        resizeImage(selectedfile,828,428,function(smImgData){
 
-                                //Remove Previous Image
-                                if(oldImageName && (oldImageName.length>0)) {
-                                    deleteObject(oldImageName,function(error){
-                                        if(!error){ //Success
-                                            callback();
-                                        }else {
-                                            console.log("Error removing file from GCS: " + oldImageName);
-                                            callback(); //Throwing no error, as functionality should continue even though we failed to remove a image
-                                        }
-                                    });
+                            var filesData = [selectedfile,smImgData];
+                            var fileNames = [imageName,"SM_" + imageName];
 
+                            //Insert selected Image and SM version of selected Image
+                            insertObjects(filesData,fileNames,function(errors){
+                                if(!errors) { //Success
+
+                                    //Remove Previous Image
+                                    if(oldImageName && (oldImageName.length>0)) {
+                                        var smImageName = "SM_" + oldImageName;
+                                        var imgNames = [oldImageName,smImageName];
+                                        deleteObjects(imgNames,function(errors){
+                                            if(!errors){ //Success
+                                                callback();
+                                            }else {
+                                                console.log("Error removing file from GCS: " + oldImageName);
+                                                console.log("Error: " + errors);
+                                                callback(); //Throwing no error, as functionality should continue even though we failed to remove a image
+                                            }
+                                        });
+
+                                    }else {
+                                        callback();
+                                    }
                                 }else {
-                                    callback();
+                                    console.log("Failed to upload image");
+                                    console.log("Errors: " + errors);
+                                    callback(errors[0]);
                                 }
-                            }else {
-                                callback(error);
-                            }
-						});
+                            });
+                        });
+
 					}else if(imageName && (imageName.length === 0)){ //Image Removed
 
 						//Remove Previous Image
                         if(oldImageName && (oldImageName.length>0)) {
-                            deleteObject(oldImageName,function(error){
+                            var smImageName = "SM_" + oldImageName;
+                            var imgNames = [oldImageName,smImageName];
+                            deleteObjects(imgNames,function(error){
                                 if(!error){ //Success
                                     callback();
                                 }else {

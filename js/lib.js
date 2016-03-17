@@ -1,5 +1,5 @@
 var PRODUCTION_MODE = true;
-var CLIENT_VER = 0.9;
+var CLIENT_VER = "0.10";
 
 /**
  * The Project ID of your Google Cloud Storage Project.
@@ -110,6 +110,33 @@ function deleteObjects(fileNames,callback){
 	);
 }
 
+function insertObjects(filesData,fileNames,callback) {
+    var errors = [];
+    insertObjectsRecursive(filesData,fileNames,callback,0,errors);
+}
+
+function insertObjectsRecursive(filesData,fileNames,callback,count,errors) {
+
+    insertObject(filesData[count],fileNames[count],function(error){
+        if(error) {
+            errors.push(error);
+        }
+
+        if((count + 1) < fileNames.length) { //Upload next File
+
+            insertObjectsRecursive(filesData,fileNames,callback,count + 1,errors);
+
+        }else { //Upload task for all files finished
+
+            if(errors.length > 0) { //Files uploaded with error
+                callback(errors);
+            }else { //Files upload successfully
+                callback();
+            }
+        }
+    });
+}
+
 function insertObject(fileData,fileName,callback) {
 
 	const boundary = '-------314159265358979323846';
@@ -160,6 +187,73 @@ function insertObject(fileData,fileName,callback) {
 		});
 	}
 }
+
+function resizeImage(fileData,maxWidth,maxHeight,callback) {
+
+    // Create an image
+    var img = document.createElement("img");
+    // Create a file reader
+    var reader = new FileReader();
+    // Set the image once loaded into file reader
+    reader.onload = function(e)
+    {
+        img.src = e.target.result;
+
+        var canvas = document.createElement("canvas");
+        //var canvas = $("<canvas>", {"id":"testing"})[0];
+        var ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0);
+
+        var MAX_WIDTH = maxWidth;
+        var MAX_HEIGHT = maxHeight;
+        var width = img.width;
+        var height = img.height;
+
+        if (width > height) {
+          if (width > MAX_WIDTH) {
+            height *= MAX_WIDTH / width;
+            width = MAX_WIDTH;
+          }
+        } else {
+          if (height > MAX_HEIGHT) {
+            width *= MAX_HEIGHT / height;
+            height = MAX_HEIGHT;
+          }
+        }
+        canvas.width = width;
+        canvas.height = height;
+        var ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0, width, height);
+
+        var dataurl = canvas.toDataURL("image/jpeg",0.7);
+        var file = dataURItoBlob(dataurl);
+        callback(file);
+    }
+
+    // Load files into file reader
+    reader.readAsDataURL(fileData);
+}
+
+function dataURItoBlob(dataURI) {
+    // convert base64/URLEncoded data component to raw binary data held in a string
+    var byteString;
+    if (dataURI.split(',')[0].indexOf('base64') >= 0)
+        byteString = atob(dataURI.split(',')[1]);
+    else
+        byteString = unescape(dataURI.split(',')[1]);
+
+    // separate out the mime component
+    var mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
+
+    // write the bytes of the string to a typed array
+    var ia = new Uint8Array(byteString.length);
+    for (var i = 0; i < byteString.length; i++) {
+        ia[i] = byteString.charCodeAt(i);
+    }
+
+    return new Blob([ia], {type:mimeString});
+}
+
 
 
 function updateImgElemFromFile(imgElem,file){
