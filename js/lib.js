@@ -1,4 +1,4 @@
-var PRODUCTION_MODE = true;
+var PRODUCTION_MODE = false;
 var CLIENT_VER = "0.10";
 
 /**
